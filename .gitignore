@@ -1,0 +1,29 @@
+# --- Compilados de Java ---
+*.class
+out/
+bin/
+target/
+
+# --- IDEs ---
+.idea/
+*.iml
+.vscode/
+*.sublime-*
+
+# --- Sistema operativo ---
+.DS_Store
+Thumbs.db
+
+# --- Notas y herramientas locales de trabajo (no forman parte de la entrega) ---
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+.claude/
+.cursor/
+.aider*
+notas-locales/
+
+# --- Material de preparación personal (no hace parte de la entrega publicada) ---
+guiones/
+pruebas/
+docs/02-demo-en-local-y-video.md
