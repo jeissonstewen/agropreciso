@@ -58,7 +58,7 @@ Login (Sesión) -> Menú principal
 | # | Patrón | Tipo | Dónde se aplica |
 |---|---|---|---|
 | 1 | **Singleton** | Creacional | `SesionUsuario` (sesión única activa) y/o `ConfiguracionSistema` |
-| 2 | **Factory Method** | Creacional | `SensorFactory` crea sensores de humedad, temperatura o pH |
+| 2 | **Factory Method** | Creacional | `CreadorSensor` y sus subclases crean sensores de humedad, temperatura o pH |
 | 3 | **Builder** | Creacional | Construcción del `ReporteCosecha` con secciones opcionales |
 | 4 | **Strategy** | Comportamiento | Reglas de riego: `RiegoPorHumedad`, `RiegoPorPronostico`, `RiegoProgramado` |
 | 5 | **Observer** | Comportamiento | Alertas: sensor emite lectura crítica y notifica a riego, inventario y reportes |
@@ -83,3 +83,42 @@ Login (Sesión) -> Menú principal
 **Alternativa complementaria:** `ConfiguracionSistema`, que guarda los umbrales de humedad y temperatura usados por varios módulos. Misma justificación (estado global único).
 
 Ver archivos: `SesionUsuario.java`, `ConfiguracionSistema.java`, `MainDemoSingleton.java`.
+
+---
+
+## 6. Entrega 2 — Patrón Factory Method
+
+**Ubicación:** módulo `sensores`.
+
+**Justificación:** el sistema simula la captura de datos con drones e IoT, y maneja tres tipos de sensor —humedad, temperatura y pH— que comparten la misma interfaz (todos entregan una `Lectura`) pero se construyen y se comportan de forma distinta: rangos, unidades y escalas diferentes.
+
+Sin el patrón, cada módulo que necesite una medición tendría que decidir por su cuenta qué clase instanciar, con un `if/else` o un `switch` sobre el tipo de sensor. Ese bloque se repetiría en riego, en reportes y en predicción, y agregar un sensor nuevo obligaría a modificar los tres. El Factory Method traslada esa decisión a una jerarquía de creadores: el código cliente pide un sensor y trabaja contra la interfaz, sin saber qué clase concreta recibió.
+
+### 6.1 Estructura
+
+| Rol en el patrón | Clase |
+|---|---|
+| Producto | `Sensor` (interfaz con `leer()` y `getTipo()`) |
+| Productos concretos | `SensorHumedad`, `SensorTemperatura`, `SensorPH` |
+| Creador | `CreadorSensor` (abstracto; declara `crearSensor()` y usa el producto en `tomarLectura()`) |
+| Creadores concretos | `CreadorHumedad`, `CreadorTemperatura`, `CreadorPH` |
+| Dato producido | `Lectura` (idSensor, tipo, valor, unidad) |
+
+```
+        Sensor (interfaz)                     CreadorSensor (abstracto)
+              ▲                                        ▲
+    ┌─────────┼─────────┐                    ┌─────────┼─────────┐
+SensorHumedad │    SensorPH          CreadorHumedad    │     CreadorPH
+      SensorTemperatura                    CreadorTemperatura
+
+    CreadorSensor.crearSensor()  ← el factory method (abstracto)
+    CreadorSensor.tomarLectura() ← operación que usa el producto
+```
+
+### 6.2 Decisiones de diseño
+
+- Los valores son **aleatorios dentro del rango físico** de cada magnitud (humedad 10–90 %, temperatura 5–38 °C, pH 4.5–8.5), para que cada ejecución simule una medición distinta.
+- Se implementó el **Factory Method del catálogo GoF**, con jerarquía de creadores, y no un *Simple Factory* de una sola clase con `switch`, que no es un patrón GoF.
+- La demo se conecta con la Entrega 1: la lectura de humedad se compara con el umbral que entrega `ConfiguracionSistema.getInstancia()`, mostrando que los dos patrones conviven en el mismo flujo.
+
+Ver archivos: `Sensor.java`, `Lectura.java`, `SensorHumedad.java`, `SensorTemperatura.java`, `SensorPH.java`, `CreadorSensor.java`, `CreadorHumedad.java`, `CreadorTemperatura.java`, `CreadorPH.java`, `MainDemoFactory.java`.

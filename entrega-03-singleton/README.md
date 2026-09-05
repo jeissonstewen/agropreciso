@@ -1,4 +1,86 @@
-# Evidencias — Entrega 1: Patrón Singleton
+# Entrega 3 — Patrón Singleton
+
+Aplicación del patrón **Singleton** en el módulo de sesión y configuración del prototipo
+**AgroPrecisión**. Garantiza que exista una sola sesión de usuario y una sola configuración de
+finca en toda la aplicación, con un punto de acceso global para los demás módulos.
+
+**Código:** [`SesionUsuario.java`](src/SesionUsuario.java) (variante *lazy*) ·
+[`ConfiguracionSistema.java`](src/ConfiguracionSistema.java) (variante *eager*) ·
+[`MainDemoSingleton.java`](src/MainDemoSingleton.java) (demo)
+
+**Para ejecutar:**
+
+```bash
+cd entrega-03-singleton/src && javac *.java && java MainDemoSingleton
+```
+
+La explicación del patrón está en el [README del proyecto](../README.md#-entregables).
+
+---
+
+## El problema
+
+El sistema opera con un único usuario autenticado a la vez y con una única configuración de
+finca. Los módulos de riego, inventario y reportes necesitan consultar ambas cosas: quién está
+operando, con qué rol, y cuáles son los umbrales vigentes.
+
+Si cada módulo creara su propio objeto de sesión aparecerían dos problemas. El primero es de
+consistencia: el módulo de riego podría creer que hay un usuario conectado cuando ya cerró
+sesión. El segundo es de propagación: si el administrador cambia el umbral de humedad, los demás
+módulos seguirían usando el valor viejo. La alternativa sin patrón sería pasar esos objetos por
+parámetro a todas las clases, lo que ensucia las firmas de todos los métodos del sistema.
+
+## La solución
+
+Aplicamos Singleton en dos clases, cada una con una variante distinta del patrón:
+
+| Clase | Variante | Por qué |
+|---|---|---|
+| `SesionUsuario` | *Lazy*, con `synchronized` | La instancia se crea la primera vez que se pide |
+| `ConfiguracionSistema` | *Eager*, con `static final` | Siempre se va a usar, y la JVM garantiza la inicialización |
+
+Los tres elementos del patrón, en [`SesionUsuario.java`](src/SesionUsuario.java):
+
+```java
+public final class SesionUsuario {
+
+    // 1. Atributo estático privado: la única instancia
+    private static SesionUsuario instancia;
+
+    // 2. Constructor privado: nadie puede hacer "new SesionUsuario()"
+    private SesionUsuario() {
+        this.activa = false;
+    }
+
+    // 3. Punto de acceso global. 'synchronized' evita dos instancias con hilos.
+    public static synchronized SesionUsuario getInstancia() {
+        if (instancia == null) {
+            instancia = new SesionUsuario();
+        }
+        return instancia;
+    }
+}
+```
+
+El módulo cliente no recibe la sesión por parámetro, la obtiene del punto de acceso global
+(ver `ModuloRiego` en [`MainDemoSingleton.java`](src/MainDemoSingleton.java)):
+
+```java
+public void ejecutarRiego() {
+    SesionUsuario sesion = SesionUsuario.getInstancia();
+    ConfiguracionSistema cfg = ConfiguracionSistema.getInstancia();
+    ...
+}
+```
+
+**Ventajas:** instancia única garantizada, acceso global sin propagar parámetros, estado
+consistente entre módulos.
+**Desventajas:** introduce estado global, dificulta las pruebas unitarias porque el estado
+persiste entre ellas, y puede ocultar dependencias. Por eso lo limitamos a sesión y
+configuración, y no a los módulos de negocio.
+
+## Evidencias
+
 
 Estas son las pruebas que ejecutamos sobre el prototipo AgroPrecisión para comprobar que el
 patrón Singleton funciona como esperábamos en el módulo de sesión y configuración. Las tres
@@ -18,9 +100,9 @@ Todo se ejecutó en VS Code sobre Java 17, con el botón *Run* de la extensión 
 ---
 
 <a id="captura-1"></a>
-## Captura 1 — Los tres elementos del patrón
+### Captura 1 — Los tres elementos del patrón
 
-![Captura 1](captura_1.png)
+![Captura 1](evidencias/captura_1.png)
 
 Esta es la clase `SesionUsuario`, y en ella se ven los tres elementos que forman el Singleton.
 
@@ -39,9 +121,9 @@ simplemente devuelve el que ya existe. Esa es la inicialización perezosa. Lo de
 instancias distintas.
 
 <a id="captura-2"></a>
-## Captura 2 — La variante *eager* en la configuración
+### Captura 2 — La variante *eager* en la configuración
 
-![Captura 2](captura_2.png)
+![Captura 2](evidencias/captura_2.png)
 
 `ConfiguracionSistema` también es un Singleton, pero construido de otra forma. Aquí la instancia
 se crea directamente en la declaración, con `private static final`, así que existe desde que la
@@ -56,9 +138,9 @@ Comparada con la captura 1, esta imagen sirve para mostrar que el patrón no es 
 la estrategia de creación se elige según cómo se vaya a usar la clase.
 
 <a id="captura-3"></a>
-## Captura 3 — El módulo de riego no recibe la sesión
+### Captura 3 — El módulo de riego no recibe la sesión
 
-![Captura 3](captura_3.png)
+![Captura 3](evidencias/captura_3.png)
 
 Aquí está el `ModuloRiego`, que es uno de los módulos que consumen los Singleton. Lo importante
 de esta captura es la firma del método: `public void ejecutarRiego()` no recibe ningún parámetro.
@@ -72,9 +154,9 @@ sesión y la configuración como parámetros en las firmas de todos los métodos
 pasarlas por constructor a cada módulo.
 
 <a id="captura-4"></a>
-## Captura 4 — La ejecución completa
+### Captura 4 — La ejecución completa
 
-![Captura 4](captura_4.png)
+![Captura 4](evidencias/captura_4.png)
 
 Esta es la salida de `MainDemoSingleton`, que recorre las cinco pruebas de la demo.
 
@@ -99,9 +181,9 @@ módulo de riego lo detecta de inmediato y vuelve a denegar el acceso, sin que n
 avisarle.
 
 <a id="captura-5"></a>
-## Captura 5 — El intento de crear una segunda instancia
+### Captura 5 — El intento de crear una segunda instancia
 
-![Captura 5](captura_5.png)
+![Captura 5](evidencias/captura_5.png)
 
 Esta es la prueba más importante de la entrega. Agregamos a propósito, en la línea 10 de
 `MainDemoSingleton.java`, la instrucción `SesionUsuario mala = new SesionUsuario();` para
@@ -126,9 +208,9 @@ descuido.
 Después de tomar la captura eliminamos esa línea, así que el código entregado compila sin errores.
 
 <a id="captura-6"></a>
-## Captura 6 — El riego activándose
+### Captura 6 — El riego activándose
 
-![Captura 6](captura_6.png)
+![Captura 6](evidencias/captura_6.png)
 
 Para cerrar el caso que quedó abierto en la prueba 3, cambiamos el login de la línea 19 a
 `s1.iniciarSesion("operario", "riego")`, un usuario que sí tiene el rol requerido.
@@ -157,18 +239,3 @@ para `s1` y `s2`.
 | 4 | Configuración compartida | `c2` devuelve `45.0` | `Umbral leído por c2: 45.0` | ✅ OK | 4 |
 | 5 | Cierre de sesión | `false` y acceso denegado | `false` y `[RIEGO] Acceso denegado` | ✅ OK | 4 |
 | 6 | Constructor bloqueado | El proyecto no compila | `The constructor SesionUsuario() is not visible` | ✅ OK | 5 |
-
-## Conclusión
-
-Las seis pruebas dieron el resultado esperado, así que el patrón resolvió el problema que
-teníamos planteado. La sesión y la configuración existen una sola vez en toda la aplicación, los
-módulos las consultan sin recibirlas por parámetro, y cualquier cambio hecho desde un punto lo
-ven todos los demás de inmediato.
-
-La prueba del constructor bloqueado es la que mejor lo resume: el patrón no es una convención que
-haya que recordar, sino una restricción que el compilador hace cumplir.
-
-Como contrapeso hay que decir que el Singleton introduce estado global, que es justamente lo que
-lo hace incómodo para las pruebas automatizadas, porque el estado sobrevive de una prueba a la
-siguiente. Por eso lo limitamos a la sesión y la configuración, y no lo usamos en los módulos de
-negocio.

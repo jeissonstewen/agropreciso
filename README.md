@@ -1,13 +1,16 @@
 <div align="center">
 
-# 🌱 AgroPrecisión
+# Patrones de Software
 
-**Sistema de Agricultura de Precisión — prototipo académico en Java**
+### 🌱 AgroPrecisión — Sistema de Agricultura de Precisión
+
+**Estudiantes:** Jeisson Stewen Berdugo Cely · Darwin Felipe Gil López
+**Grupo:** E-195
 
 [![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Tipo](https://img.shields.io/badge/Aplicación-Consola-blue)](#-cómo-ejecutar)
 [![Datos](https://img.shields.io/badge/Datos-Simulados%20(sin%20BD)-lightgrey)](#-alcance-y-restricciones)
-[![Avance](https://img.shields.io/badge/Entregas-1%2F12-yellow)](#-hoja-de-ruta-de-patrones)
+[![Patrones](https://img.shields.io/badge/Patrones-2%2F12-yellow)](#-hoja-de-ruta-de-patrones)
 
 </div>
 
@@ -21,7 +24,8 @@ de la asignatura **Patrones de Software**.
 | | |
 |---|---|
 | **Asignatura** | Patrones de Software |
-| **Autores** | Darwin Felipe Gil López · Jeisson Stewen Berdugo Cely |
+| **Grupo** | E-195 |
+| **Estudiantes** | Jeisson Stewen Berdugo Cely · Darwin Felipe Gil López |
 | **Lenguaje** | Java 17+ (compatible con JDK 8+) |
 
 ---
@@ -33,6 +37,10 @@ de la asignatura **Patrones de Software**.
 - [Estructura del repositorio](#-estructura-del-repositorio)
 - [Cómo ejecutar](#-cómo-ejecutar)
 - [Entregables](#-entregables)
+  - [Entrega 1 — Code smells, punto 4](#entrega-1--análisis-de-code-smells-punto-4)
+  - [Entrega 2 — Code smells, puntos 11, 13, 15 y 20](#entrega-2--análisis-de-code-smells-puntos-11-13-15-y-20)
+  - [Entrega 3 — Singleton](#entrega-3--patrón-singleton)
+  - [Entrega 4 — Factory Method](#entrega-4--patrón-factory-method)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -58,136 +66,133 @@ patrones de diseño de software en cada componente del sistema.
 
 ## 📂 Estructura del repositorio
 
+Cada entrega vive en su propia carpeta, con su código, sus evidencias y su explicación.
+
 ```
 agroprecision/
-├── README.md                     Este archivo
+├── README.md                          Este archivo
 ├── .gitignore
-├── docs/                         Documentación de diseño
-│   └── 01-objetivos-y-diseno.md
-├── src/                          Código fuente Java
-│   ├── SesionUsuario.java
-│   ├── ConfiguracionSistema.java
-│   └── MainDemoSingleton.java
-└── evidencias/                   Capturas de las pruebas ejecutadas
-    └── entrega-01-singleton/
+├── docs/
+│   └── 01-objetivos-y-diseno.md       Objetivos y diseño del sistema
+├── entrega-01-code-smells/            Análisis de code smells (punto 4)
+├── entrega-02-code-smells/            Análisis de code smells (puntos 11, 13, 15 y 20)
+├── entrega-03-singleton/              Patrón Singleton
+│   ├── README.md                      Explicación y evidencias
+│   ├── src/                           Código fuente
+│   └── evidencias/                    Capturas de las pruebas
+└── entrega-04-factory-method/         Patrón Factory Method
+    ├── README.md
+    ├── src/
+    └── evidencias/
 ```
 
 | Carpeta | Contenido |
 |---|---|
-| [`docs/`](docs/) | Objetivos y diseño del sistema |
-| [`src/`](src/) | Código fuente Java, sin paquetes, compilable con `javac *.java` |
-| [`evidencias/`](evidencias/) | Capturas de pantalla de las pruebas ejecutadas |
+| [`docs/`](docs/) | Objetivos y diseño general del sistema |
+| [`entrega-01-code-smells/`](entrega-01-code-smells/) | Entrega 1 — Análisis de code smells, punto 4 |
+| [`entrega-02-code-smells/`](entrega-02-code-smells/) | Entrega 2 — Análisis de code smells, puntos 11, 13, 15 y 20 |
+| [`entrega-03-singleton/`](entrega-03-singleton/) | Entrega 3 — Singleton en sesión y configuración |
+| [`entrega-04-factory-method/`](entrega-04-factory-method/) | Entrega 4 — Factory Method en el módulo de sensores |
 
 ## ▶️ Cómo ejecutar
 
+Cada entrega es independiente: se compila y se ejecuta dentro de su propia carpeta.
+
 ```bash
-cd src
-javac *.java
-java MainDemoSingleton
+cd entrega-03-singleton/src && javac *.java && java MainDemoSingleton
 ```
 
-> Requiere **JDK 17 o superior** (también funciona con JDK 8+).
-> El código no usa paquetes, por lo que se compila completo con un solo `javac *.java`.
+```bash
+cd entrega-04-factory-method/src && javac *.java && java MainDemoFactory
+```
+
+> Requiere **JDK 17 o superior** (también funciona con JDK 8+). El código no usa paquetes.
+> `SesionUsuario` y `ConfiguracionSistema` aparecen copiadas en la entrega 4 para que esa
+> carpeta compile por sí sola; el original y su explicación están en la entrega 3.
 
 ---
 
 ## 📦 Entregables
 
-Cada entrega incluye el **código** donde se evidencia el patrón, la **actualización del diseño**
-si aplica, las **evidencias** de las pruebas ejecutadas y el **video** con la explicación.
+Cada entrega tiene su propia carpeta con el documento que la sustenta. Las entregas 1 y 2 son
+análisis de *code smells*; de la 3 en adelante son implementaciones de patrones, y cada carpeta
+incluye además su código y las evidencias de las pruebas ejecutadas.
 
-### Entrega 1 — Patrón Singleton
+| Entrega | Tema | Alcance | Documento | Código | Evidencias | Video |
+|---|---|---|---|---|---|---|
+| 1 | Análisis de code smells | Punto 4 | [Ver](entrega-01-code-smells/) | — | — | — |
+| 2 | Análisis de code smells | Puntos 11, 13, 15 y 20 | [Ver](entrega-02-code-smells/) | — | — | — |
+| 3 | Singleton | Sesión y configuración | [Ver](entrega-03-singleton/) | [Ver](entrega-03-singleton/src/) | [6 capturas](entrega-03-singleton/evidencias/) | _(pendiente)_ |
+| 4 | Factory Method | Sensores | [Ver](entrega-04-factory-method/) | [Ver](entrega-04-factory-method/src/) | [6 capturas](entrega-04-factory-method/evidencias/) | _(pendiente)_ |
 
-| Entregable | Enlace |
-|---|---|
-| 💻 Código fuente | [`SesionUsuario.java`](src/SesionUsuario.java) · [`ConfiguracionSistema.java`](src/ConfiguracionSistema.java) · [`MainDemoSingleton.java`](src/MainDemoSingleton.java) |
-| 📐 Diseño | [`docs/01-objetivos-y-diseno.md`](docs/01-objetivos-y-diseno.md#5-entrega-1--patrón-singleton) |
-| 📸 Evidencias | [`evidencias/entrega-01-singleton/`](evidencias/entrega-01-singleton/) |
-| 🎬 Video de explicación | _(pendiente de publicar en YouTube)_ |
+### Entrega 1 — Análisis de code smells (punto 4)
 
-#### Evidencia del patrón
+Análisis del método `Transferir()` de `BancoService`. El olor principal es **Feature Envy**: el
+método usa más los datos y métodos de `Cuenta` que los propios, así que la lógica está ubicada
+donde no viven los datos. Alrededor aparecen **Anemic Domain Model**, **Inappropriate Intimacy**
+y violaciones de *Tell, Don't Ask* y del principio de responsabilidad única.
 
-**Problema que resuelve:** el sistema opera con **un único usuario autenticado** y **una única
-configuración de finca**, y los módulos de riego, inventario y reportes necesitan consultarlos.
-Sin Singleton habría que pasar esos objetos por parámetro a todas las clases, o arriesgarse a
-tener dos sesiones con estados distintos.
+📄 **[Documento completo de la Entrega 1](entrega-01-code-smells/)**
 
-**Solución:** `SesionUsuario` (variante *lazy*, con `synchronized`) y `ConfiguracionSistema`
-(variante *eager*, con `static final`) garantizan una sola instancia y un punto de acceso global.
+### Entrega 2 — Análisis de code smells (puntos 11, 13, 15 y 20)
 
-Los tres elementos del patrón, en [`SesionUsuario.java`](src/SesionUsuario.java):
+Cuatro fragmentos más: **Long Parameter List** con *Primitive Obsession* y *Data Clumps* (punto
+11), **Comments** que repiten o contradicen al código (punto 13), **Speculative Generality** en
+un validador sobreingenierizado (punto 15) e **Inappropriate Intimacy** con un método `validar…`
+que muta estado ajeno y provoca un `null` en tiempo de ejecución (punto 20).
 
-```java
-public final class SesionUsuario {
+📄 **[Documento completo de la Entrega 2](entrega-02-code-smells/)**
 
-    // 1. Atributo estático privado: la única instancia
-    private static SesionUsuario instancia;
+### Entrega 3 — Patrón Singleton
 
-    // 2. Constructor privado: nadie puede hacer "new SesionUsuario()"
-    private SesionUsuario() {
-        this.activa = false;
-    }
+Garantiza que exista **una sola sesión de usuario y una sola configuración de finca** en toda la
+aplicación, con un punto de acceso global. Se implementaron las dos variantes del patrón:
+`SesionUsuario` con inicialización perezosa y `synchronized`, y `ConfiguracionSistema` con
+inicialización temprana mediante `static final`.
 
-    // 3. Punto de acceso global. 'synchronized' evita dos instancias con hilos.
-    public static synchronized SesionUsuario getInstancia() {
-        if (instancia == null) {
-            instancia = new SesionUsuario();
-        }
-        return instancia;
-    }
-}
-```
+Resuelve el problema de tener que propagar esos objetos por parámetro a todas las clases, y el
+de que dos módulos trabajen con estados distintos. La prueba más contundente es que el
+constructor privado impide compilar un `new SesionUsuario()`: la unicidad la garantiza el
+compilador, no una convención.
 
-El módulo cliente **no recibe la sesión por parámetro**, la obtiene del punto de acceso global
-(ver `ModuloRiego` en [`MainDemoSingleton.java`](src/MainDemoSingleton.java)):
+📄 **[Documento completo de la Entrega 3](entrega-03-singleton/)** — explicación, código y las
+seis capturas de las pruebas.
 
-```java
-public void ejecutarRiego() {
-    SesionUsuario sesion = SesionUsuario.getInstancia();
-    ConfiguracionSistema cfg = ConfiguracionSistema.getInstancia();
-    ...
-}
-```
+### Entrega 4 — Patrón Factory Method
 
-**Cómo se comprueba al ejecutar:**
+Traslada la decisión de **qué sensor construir** desde el código cliente hacia una jerarquía de
+creadores. `CreadorSensor` declara el *factory method* `crearSensor()` como abstracto y define
+la operación `tomarLectura()`, que trabaja contra la interfaz `Sensor` sin conocer las clases
+concretas. Cada creador concreto aporta una sola línea.
 
-| Evidencia en consola | Qué demuestra |
-|---|---|
-| `s1 == s2 ? true` y `hashCode` idénticos | Existe una sola instancia |
-| `Desde s2 el usuario es: ingeniero` | El login hecho con `s1` es visible desde `s2`: estado global |
-| `Umbral leído por c2: 45.0` | El cambio de configuración hecho con `c1` lo ve `c2` |
-| `¿Sesión activa según s1? false` | Cerrar sesión desde `s2` afecta a `s1` y al módulo de riego |
-| `error: SesionUsuario() has private access` | El constructor privado **impide** crear una segunda instancia: lo garantiza el compilador, no una convención |
+Elimina los `if/else` de creación que de otro modo se repetirían en riego, reportes y predicción.
+La demostración más clara es que se agregó un cuarto sensor —luminosidad— y el código cliente no
+cambió ni una línea.
 
-**Ventajas:** instancia única garantizada, acceso global sin propagar parámetros, estado
-consistente entre módulos.
-**Desventajas:** introduce estado global, dificulta las pruebas unitarias y puede ocultar
-dependencias. Por eso se limita a sesión y configuración, y no a los módulos de negocio.
-
-### Resumen de entregas
-
-| # | Patrón | Código | Evidencias | Video |
-|---|---|---|---|---|
-| 1 | Singleton | [Ver](src/) | [Ver](evidencias/entrega-01-singleton/) | _(pendiente)_ |
+📄 **[Documento completo de la Entrega 4](entrega-04-factory-method/)** — recoge también la
+Entrega 3, con la explicación de ambos patrones y las doce capturas.
 
 ---
 
 ## 🗺️ Hoja de ruta de patrones
 
-| # | Patrón | Tipo | Módulo | Estado |
-|---|---|---|---|---|
-| 1 | **Singleton** | Creacional | Sesión y configuración | ✅ Completado |
-| 2 | Factory Method | Creacional | Sensores | ⏳ Pendiente |
-| 3 | Builder | Creacional | Reportes | ⏳ Pendiente |
-| 4 | Strategy | Comportamiento | Riego | ⏳ Pendiente |
-| 5 | Observer | Comportamiento | Alertas | ⏳ Pendiente |
-| 6 | Decorator | Estructural | Lecturas | ⏳ Pendiente |
-| 7 | Adapter | Estructural | Servicio de clima externo | ⏳ Pendiente |
-| 8 | Facade | Estructural | Menú de consola | ⏳ Pendiente |
-| 9 | Command | Comportamiento | Acciones del menú | ⏳ Pendiente |
-| 10 | Template Method | Comportamiento | Predicción | ⏳ Pendiente |
-| 11 | State | Comportamiento | Estados del lote | ⏳ Pendiente |
-| 12 | DAO / Repository | Arquitectural | Persistencia simulada | ⏳ Pendiente |
+La numeración de los patrones es la del proyecto; la columna *Entrega* indica en qué entrega
+del curso se sustentó cada uno.
+
+| # | Patrón | Tipo | Módulo | Entrega | Estado |
+|---|---|---|---|---|---|
+| 1 | **Singleton** | Creacional | Sesión y configuración | 3 | ✅ Completado |
+| 2 | **Factory Method** | Creacional | Sensores | 4 | ✅ Completado |
+| 3 | Builder | Creacional | Reportes | — | ⏳ Pendiente |
+| 4 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
+| 5 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
+| 6 | Decorator | Estructural | Lecturas | — | ⏳ Pendiente |
+| 7 | Adapter | Estructural | Servicio de clima externo | — | ⏳ Pendiente |
+| 8 | Facade | Estructural | Menú de consola | — | ⏳ Pendiente |
+| 9 | Command | Comportamiento | Acciones del menú | — | ⏳ Pendiente |
+| 10 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
+| 11 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
+| 12 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
 
 ## 🧩 Módulos del sistema
 
@@ -204,5 +209,9 @@ dependencias. Por eso se limita a sesión y configuración, y no a los módulos 
 ---
 
 <div align="center">
-<sub>Proyecto académico · Asignatura Patrones de Software</sub>
+
+**Universitaria Tecnológica de Santander**
+
+<sub>Patrones de Software · Grupo E-195</sub>
+
 </div>
