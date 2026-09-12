@@ -10,7 +10,7 @@
 [![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Tipo](https://img.shields.io/badge/Aplicación-Consola-blue)](#-cómo-ejecutar)
 [![Datos](https://img.shields.io/badge/Datos-Simulados%20(sin%20BD)-lightgrey)](#-alcance-y-restricciones)
-[![Patrones](https://img.shields.io/badge/Patrones-2%2F12-yellow)](#-hoja-de-ruta-de-patrones)
+[![Patrones](https://img.shields.io/badge/Patrones-3%2F12-yellow)](#-hoja-de-ruta-de-patrones)
 
 </div>
 
@@ -41,6 +41,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 2 — Code smells, puntos 11, 13, 15 y 20](#semana-2--análisis-de-code-smells-puntos-11-13-15-y-20)
   - [Semana 3 — Singleton](#semana-3--patrón-singleton)
   - [Semana 4 — Factory Method](#semana-4--patrón-factory-method)
+  - [Semana 5 — Builder](#semana-5--patrón-builder)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -53,8 +54,8 @@ datos simulados, que permita el monitoreo de cultivos, el riego automatizado, la
 inventario y la predicción de cosechas, con el fin de evidenciar la aplicación práctica de
 patrones de diseño de software en cada componente del sistema.
 
-📄 Objetivos específicos, modelo de dominio y diseño completo:
-**[`docs/01-objetivos-y-diseno.md`](docs/01-objetivos-y-diseno.md)**
+📄 Objetivos específicos y desarrollo completo de cada semana:
+**[`Patrones-de-Software-E195.docx`](Patrones-de-Software-E195.docx)**
 
 ## 📌 Alcance y restricciones
 
@@ -73,15 +74,17 @@ agroprecision/
 ├── README.md                          Este archivo
 ├── Patrones-de-Software-E195.docx     Documento Word acumulativo del proyecto (todas las semanas)
 ├── .gitignore
-├── docs/
-│   └── 01-objetivos-y-diseno.md       Objetivos y diseño del sistema
 ├── semana-1-code-smells/            Análisis de code smells (punto 4)
 ├── semana-2-code-smells/            Análisis de code smells (puntos 11, 13, 15 y 20)
 ├── semana-3-singleton/              Patrón Singleton
 │   ├── README.md                      Explicación y evidencias
 │   ├── src/                           Código fuente
 │   └── evidencias/                    Capturas de las pruebas
-└── semana-4-factory-method/         Patrón Factory Method
+├── semana-4-factory-method/         Patrón Factory Method
+│   ├── README.md
+│   ├── src/
+│   └── evidencias/
+└── semana-5-builder/                Patrón Builder
     ├── README.md
     ├── src/
     └── evidencias/
@@ -90,11 +93,11 @@ agroprecision/
 | Carpeta / archivo | Contenido |
 |---|---|
 | [`Patrones-de-Software-E195.docx`](Patrones-de-Software-E195.docx) | Documento Word acumulativo: objetivos y todas las semanas |
-| [`docs/`](docs/) | Objetivos y diseño general del sistema |
 | [`semana-1-code-smells/`](semana-1-code-smells/) | Semana 1 — Análisis de code smells, punto 4 |
 | [`semana-2-code-smells/`](semana-2-code-smells/) | Semana 2 — Análisis de code smells, puntos 11, 13, 15 y 20 |
 | [`semana-3-singleton/`](semana-3-singleton/) | Semana 3 — Singleton en sesión y configuración |
 | [`semana-4-factory-method/`](semana-4-factory-method/) | Semana 4 — Factory Method en el módulo de sensores |
+| [`semana-5-builder/`](semana-5-builder/) | Semana 5 — Builder en el módulo de reportes |
 
 ## ▶️ Cómo ejecutar
 
@@ -108,9 +111,13 @@ cd semana-3-singleton/src && javac *.java && java MainDemoSingleton
 cd semana-4-factory-method/src && javac *.java && java MainDemoFactory
 ```
 
+```bash
+cd semana-5-builder/src && javac *.java && java MainDemoBuilder
+```
+
 > Requiere **JDK 17 o superior** (también funciona con JDK 8+). El código no usa paquetes.
-> `SesionUsuario` y `ConfiguracionSistema` aparecen copiadas en la semana 4 para que esa
-> carpeta compile por sí sola; el original y su explicación están en la semana 3.
+> Las clases de semanas anteriores aparecen copiadas en las semanas siguientes para que cada
+> carpeta compile por sí sola; el original y su explicación están en la semana donde se crearon.
 
 ---
 
@@ -126,6 +133,7 @@ incluye además su código y las evidencias de las pruebas ejecutadas.
 | 2 | Análisis de code smells | Puntos 11, 13, 15 y 20 | [Ver](semana-2-code-smells/) | — | — | — |
 | 3 | Singleton | Sesión y configuración | [Ver](semana-3-singleton/) | [Ver](semana-3-singleton/src/) | [6 capturas](semana-3-singleton/evidencias/) | _(pendiente)_ |
 | 4 | Factory Method | Sensores | [Ver](semana-4-factory-method/) | [Ver](semana-4-factory-method/src/) | [6 capturas](semana-4-factory-method/evidencias/) | _(pendiente)_ |
+| 5 | Builder | Reportes | [Ver](semana-5-builder/) | [Ver](semana-5-builder/src/) | [6 capturas](semana-5-builder/evidencias/) | _(pendiente)_ |
 
 ### Semana 1 — Análisis de code smells (punto 4)
 
@@ -174,6 +182,21 @@ cambió ni una línea.
 📄 **[Documento completo de la Semana 4](semana-4-factory-method/)** — recoge también la
 Semana 3, con la explicación de ambos patrones y las doce capturas.
 
+### Semana 5 — Patrón Builder
+
+Separa la **construcción de un reporte de finca** de su representación. `ReporteFinca` es un
+producto inmutable con secciones opcionales (encabezado, lecturas, alertas, inventario, resumen);
+`ReporteBuilder` declara un paso por sección y `ReporteConsolaBuilder` los implementa, valida y
+crea el producto de una sola vez. `DirectorReportes` guarda las recetas: el reporte de turno del
+operario y el gerencial.
+
+Resuelve el constructor de siete parámetros —la mitad opcionales— que de otro modo exigiría el
+reporte, y conecta las tres semanas: el encabezado sale de los Singleton de la Semana 3 y las
+lecturas de las fábricas de la Semana 4.
+
+📄 **[Documento completo de la Semana 5](semana-5-builder/)** — explicación, código y las seis
+capturas de las pruebas.
+
 ---
 
 ## 🗺️ Hoja de ruta de patrones
@@ -185,7 +208,7 @@ del curso se sustentó cada uno.
 |---|---|---|---|---|---|
 | 1 | **Singleton** | Creacional | Sesión y configuración | 3 | ✅ Completado |
 | 2 | **Factory Method** | Creacional | Sensores | 4 | ✅ Completado |
-| 3 | Builder | Creacional | Reportes | — | ⏳ Pendiente |
+| 3 | **Builder** | Creacional | Reportes | 5 | ✅ Completado |
 | 4 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
 | 5 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
 | 6 | Decorator | Estructural | Lecturas | — | ⏳ Pendiente |
