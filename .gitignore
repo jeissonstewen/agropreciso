@@ -28,7 +28,7 @@ guiones/
 pruebas/
 docs/02-demo-en-local-y-video.md
 
-# --- Entregable en Word para el docente (se envía por otra vía) ---
+# --- Generador del Word (herramienta local). El .docx generado vive en la raíz y SÍ se versiona ---
 entregable-docente/
 
 # --- Talleres de clase (no versionables) ---

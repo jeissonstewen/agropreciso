@@ -1,10 +1,10 @@
-# Entrega 2 — Análisis de code smells (puntos 11, 13, 15 y 20)
+# Semana 2 — Análisis de code smells (puntos 11, 13, 15 y 20)
 
 **Asignatura:** Patrones de Software
 **Autores:** Darwin Felipe Gil López · Jeisson Stewen Berdugo Cely
 
-Análisis de los puntos restantes del taller de *code smells*. La primera entrega cubrió el
-[punto 4](../entrega-01-code-smells/); aquí se analizan los cuatro fragmentos siguientes.
+Análisis de los puntos restantes del taller de *code smells*. La semana 1 cubrió el
+[punto 4](../semana-1-code-smells/); aquí se analizan los cuatro fragmentos siguientes.
 
 | Punto | Código analizado | Smell principal |
 |---|---|---|

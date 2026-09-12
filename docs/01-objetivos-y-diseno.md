@@ -74,7 +74,7 @@ Login (Sesión) -> Menú principal
 
 ---
 
-## 5. Entrega 1 — Patrón Singleton
+## 5. Semana 3 — Patrón Singleton
 
 **Ubicación:** clase `SesionUsuario` del módulo `sesion`.
 
@@ -86,7 +86,7 @@ Ver archivos: `SesionUsuario.java`, `ConfiguracionSistema.java`, `MainDemoSingle
 
 ---
 
-## 6. Entrega 2 — Patrón Factory Method
+## 6. Semana 4 — Patrón Factory Method
 
 **Ubicación:** módulo `sensores`.
 
@@ -119,6 +119,6 @@ SensorHumedad │    SensorPH          CreadorHumedad    │     CreadorPH
 
 - Los valores son **aleatorios dentro del rango físico** de cada magnitud (humedad 10–90 %, temperatura 5–38 °C, pH 4.5–8.5), para que cada ejecución simule una medición distinta.
 - Se implementó el **Factory Method del catálogo GoF**, con jerarquía de creadores, y no un *Simple Factory* de una sola clase con `switch`, que no es un patrón GoF.
-- La demo se conecta con la Entrega 1: la lectura de humedad se compara con el umbral que entrega `ConfiguracionSistema.getInstancia()`, mostrando que los dos patrones conviven en el mismo flujo.
+- La demo se conecta con la Semana 3: la lectura de humedad se compara con el umbral que entrega `ConfiguracionSistema.getInstancia()`, mostrando que los dos patrones conviven en el mismo flujo.
 
 Ver archivos: `Sensor.java`, `Lectura.java`, `SensorHumedad.java`, `SensorTemperatura.java`, `SensorPH.java`, `CreadorSensor.java`, `CreadorHumedad.java`, `CreadorTemperatura.java`, `CreadorPH.java`, `MainDemoFactory.java`.

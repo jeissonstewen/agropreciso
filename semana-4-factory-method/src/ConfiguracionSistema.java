@@ -1,8 +1,8 @@
 /* ---------------------------------------------------------------
- * COPIA de la Entrega 3 (patrón Singleton).
+ * COPIA de la Semana 3 (patrón Singleton).
  * Se incluye aquí para que esta entrega compile y se ejecute de forma
  * independiente. El original y su explicación están en
- * entrega-03-singleton/. No se modificó nada de su contenido.
+ * semana-3-singleton/. No se modificó nada de su contenido.
  * --------------------------------------------------------------- */
 /**
  * PATRÓN SINGLETON (variante de inicialización temprana / eager).

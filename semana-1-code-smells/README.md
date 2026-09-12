@@ -1,4 +1,4 @@
-# Entrega 1 — Análisis de code smells (punto 4)
+# Semana 1 — Análisis de code smells (punto 4)
 
 **Asignatura:** Patrones de Software
 **Autores:** Darwin Felipe Gil López · Jeisson Stewen Berdugo Cely

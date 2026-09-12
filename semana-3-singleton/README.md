@@ -1,4 +1,4 @@
-# Entrega 3 — Patrón Singleton
+# Semana 3 — Patrón Singleton
 
 Aplicación del patrón **Singleton** en el módulo de sesión y configuración del prototipo
 **AgroPrecisión**. Garantiza que exista una sola sesión de usuario y una sola configuración de
@@ -11,7 +11,7 @@ finca en toda la aplicación, con un punto de acceso global para los demás mód
 **Para ejecutar:**
 
 ```bash
-cd entrega-03-singleton/src && javac *.java && java MainDemoSingleton
+cd semana-3-singleton/src && javac *.java && java MainDemoSingleton
 ```
 
 La explicación del patrón está en el [README del proyecto](../README.md#-entregables).
