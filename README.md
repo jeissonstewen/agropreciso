@@ -10,7 +10,7 @@
 [![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Tipo](https://img.shields.io/badge/Aplicación-Consola-blue)](#-cómo-ejecutar)
 [![Datos](https://img.shields.io/badge/Datos-Simulados%20(sin%20BD)-lightgrey)](#-alcance-y-restricciones)
-[![Patrones](https://img.shields.io/badge/Patrones-3%2F12-yellow)](#-hoja-de-ruta-de-patrones)
+[![Patrones](https://img.shields.io/badge/Patrones-5%2F14-yellow)](#-hoja-de-ruta-de-patrones)
 
 </div>
 
@@ -42,6 +42,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 3 — Singleton](#semana-3--patrón-singleton)
   - [Semana 4 — Factory Method](#semana-4--patrón-factory-method)
   - [Semana 5 — Builder](#semana-5--patrón-builder)
+  - [Semana 6 — Abstract Factory y Prototype](#semana-6--patrones-abstract-factory-y-prototype)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -84,7 +85,11 @@ agroprecision/
 │   ├── README.md
 │   ├── src/
 │   └── evidencias/
-└── semana-5-builder/                Patrón Builder
+├── semana-5-builder/                Patrón Builder
+│   ├── README.md
+│   ├── src/
+│   └── evidencias/
+└── semana-6-abstract-factory-prototype/   Patrones Abstract Factory y Prototype
     ├── README.md
     ├── src/
     └── evidencias/
@@ -98,6 +103,7 @@ agroprecision/
 | [`semana-3-singleton/`](semana-3-singleton/) | Semana 3 — Singleton en sesión y configuración |
 | [`semana-4-factory-method/`](semana-4-factory-method/) | Semana 4 — Factory Method en el módulo de sensores |
 | [`semana-5-builder/`](semana-5-builder/) | Semana 5 — Builder en el módulo de reportes |
+| [`semana-6-abstract-factory-prototype/`](semana-6-abstract-factory-prototype/) | Semana 6 — Abstract Factory (equipamiento por zona) y Prototype (plantillas de lote) |
 
 ## ▶️ Cómo ejecutar
 
@@ -113,6 +119,10 @@ cd semana-4-factory-method/src && javac *.java && java MainDemoFactory
 
 ```bash
 cd semana-5-builder/src && javac *.java && java MainDemoBuilder
+```
+
+```bash
+cd semana-6-abstract-factory-prototype/src && javac *.java && java MainDemoAbstractFactoryPrototype
 ```
 
 > Requiere **JDK 17 o superior** (también funciona con JDK 8+). El código no usa paquetes.
@@ -134,6 +144,7 @@ incluye además su código y las evidencias de las pruebas ejecutadas.
 | 3 | Singleton | Sesión y configuración | [Ver](semana-3-singleton/) | [Ver](semana-3-singleton/src/) | [6 capturas](semana-3-singleton/evidencias/) | _(pendiente)_ |
 | 4 | Factory Method | Sensores | [Ver](semana-4-factory-method/) | [Ver](semana-4-factory-method/src/) | [6 capturas](semana-4-factory-method/evidencias/) | _(pendiente)_ |
 | 5 | Builder | Reportes | [Ver](semana-5-builder/) | [Ver](semana-5-builder/src/) | [6 capturas](semana-5-builder/evidencias/) | _(pendiente)_ |
+| 6 | Abstract Factory · Prototype | Equipamiento y lotes | [Ver](semana-6-abstract-factory-prototype/) | [Ver](semana-6-abstract-factory-prototype/src/) | [6 capturas](semana-6-abstract-factory-prototype/evidencias/) | _(pendiente)_ |
 
 ### Semana 1 — Análisis de code smells (punto 4)
 
@@ -197,6 +208,20 @@ lecturas de las fábricas de la Semana 4.
 📄 **[Documento completo de la Semana 5](semana-5-builder/)** — explicación, código y las seis
 capturas de las pruebas.
 
+### Semana 6 — Patrones Abstract Factory y Prototype
+
+**Abstract Factory** produce familias completas de equipamiento coherentes con la zona:
+`FabricaInvernadero` entrega sensores de rango estrecho y riego por goteo; `FabricaCampoAbierto`,
+sensores de rango amplio y aspersor. `EstacionMonitoreo` recibe una `FabricaEquipamiento` y arma
+la estación sin un solo `new` concreto: mezclar familias es imposible por construcción.
+
+**Prototype** convierte un `Lote` ya equipado en plantilla: `CatalogoLotes` la guarda bajo una
+clave y entrega clones con nombre y área propios. `Lote.clone()` hace copia profunda de los
+umbrales y de la lista de sensores, así que modificar un clon nunca altera la plantilla.
+
+📄 **[Documento completo de la Semana 6](semana-6-abstract-factory-prototype/)** — explicación de
+ambos patrones, código y las seis capturas de las pruebas.
+
 ---
 
 ## 🗺️ Hoja de ruta de patrones
@@ -209,15 +234,17 @@ del curso se sustentó cada uno.
 | 1 | **Singleton** | Creacional | Sesión y configuración | 3 | ✅ Completado |
 | 2 | **Factory Method** | Creacional | Sensores | 4 | ✅ Completado |
 | 3 | **Builder** | Creacional | Reportes | 5 | ✅ Completado |
-| 4 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
-| 5 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
-| 6 | Decorator | Estructural | Lecturas | — | ⏳ Pendiente |
-| 7 | Adapter | Estructural | Servicio de clima externo | — | ⏳ Pendiente |
-| 8 | Facade | Estructural | Menú de consola | — | ⏳ Pendiente |
-| 9 | Command | Comportamiento | Acciones del menú | — | ⏳ Pendiente |
-| 10 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
-| 11 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
-| 12 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
+| 4 | **Abstract Factory** | Creacional | Equipamiento por zona | 6 | ✅ Completado |
+| 5 | **Prototype** | Creacional | Plantillas de lote | 6 | ✅ Completado |
+| 6 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
+| 7 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
+| 8 | Decorator | Estructural | Lecturas | — | ⏳ Pendiente |
+| 9 | Adapter | Estructural | Servicio de clima externo | — | ⏳ Pendiente |
+| 10 | Facade | Estructural | Menú de consola | — | ⏳ Pendiente |
+| 11 | Command | Comportamiento | Acciones del menú | — | ⏳ Pendiente |
+| 12 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
+| 13 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
+| 14 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
 
 ## 🧩 Módulos del sistema
 
@@ -230,6 +257,7 @@ del curso se sustentó cada uno.
 | `inventario` | Insumos, productos cosechados, cadena de frío |
 | `prediccion` | Estimación de cosecha con datos históricos |
 | `reportes` | Salida por consola de estado y alertas |
+| `lote` | Parcelas de cultivo: equipamiento, umbrales propios y plantillas |
 
 ---
 
