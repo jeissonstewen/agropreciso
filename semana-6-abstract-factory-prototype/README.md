@@ -77,6 +77,20 @@ esa lógica pertenece al módulo de riego y será el tema del patrón Strategy.
 
 ---
 
+### Diagrama UML del Abstract Factory
+
+![Diagrama UML del patrón Abstract Factory](diagramas/uml-abstract-factory.png)
+
+La fábrica abstracta declara un método por producto y cada fábrica concreta crea, en exclusiva,
+los productos de su familia: las flechas de creación de `FabricaInvernadero` apuntan solo a
+`SensorHumedadInvernadero`, `SensorTemperaturaInvernadero` y `RiegoGoteo`. `EstacionMonitoreo`
+depende únicamente de las tres interfaces —`FabricaEquipamiento`, `Sensor` y `ActuadorRiego`—, que
+es lo que le permite funcionar igual con cualquier zona.
+
+Fuente del diagrama: [`diagramas/uml-abstract-factory.mmd`](diagramas/uml-abstract-factory.mmd).
+
+---
+
 ## Parte 2 — Prototype: plantillas de lote
 
 ### El problema
@@ -126,6 +140,18 @@ Las dos partes de la semana se encuentran en `Lote.equipar(FabricaEquipamiento)`
 equipa **una sola vez** con la fábrica de su zona, y cada clon hereda el equipamiento completo.
 
 ---
+
+### Diagrama UML del Prototype
+
+![Diagrama UML del patrón Prototype](diagramas/uml-prototype.png)
+
+El diagrama distingue con la notación lo que el código decide en `clone()`: la relación con
+`UmbralesLote` es de **composición** (rombo lleno) porque cada lote tiene los suyos y se duplican
+al clonar; las relaciones con `Sensor` y `ActuadorRiego` son de **agregación** (rombo vacío) porque
+esas instancias se comparten entre el prototipo y sus clones. `CatalogoLotes` guarda las plantillas
+y entrega siempre una copia.
+
+Fuente del diagrama: [`diagramas/uml-prototype.mmd`](diagramas/uml-prototype.mmd).
 
 ## Evidencias
 

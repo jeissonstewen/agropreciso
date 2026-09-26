@@ -79,6 +79,19 @@ consistente entre módulos.
 persiste entre ellas, y puede ocultar dependencias. Por eso lo limitamos a sesión y
 configuración, y no a los módulos de negocio.
 
+## Diagrama UML
+
+![Diagrama UML del patrón Singleton](diagramas/uml-singleton.png)
+
+Los tres elementos del patrón se ven en ambas clases: el atributo estático que guarda la única
+instancia, el constructor privado que impide el `new`, y el método estático `getInstancia()` como
+punto de acceso global. La diferencia está en cómo se crea esa instancia: `SesionUsuario` la crea
+en la primera llamada (*lazy*, con `getInstancia()` sincronizado) y `ConfiguracionSistema` al
+cargar la clase (*eager*, con `static final`). `ModuloRiego` muestra el uso típico: obtiene lo que
+necesita sin recibirlo por parámetro.
+
+Fuente del diagrama: [`diagramas/uml-singleton.mmd`](diagramas/uml-singleton.mmd).
+
 ## Evidencias
 
 

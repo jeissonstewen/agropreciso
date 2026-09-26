@@ -1,0 +1,56 @@
+---
+title: Semana 6 - Patron Prototype - plantillas de lote
+---
+classDiagram
+    direction LR
+
+    class Cloneable {
+        <<interface>>
+    }
+
+    class Lote {
+        -nombre: String
+        -cultivo: String
+        -areaHectareas: double
+        -umbrales: UmbralesLote
+        -sensores: List~Sensor~
+        -actuador: ActuadorRiego
+        +equipar(fabrica) void
+        +clone() Lote
+        +monitorear() void
+        +agregarSensor(sensor) void
+    }
+
+    class UmbralesLote {
+        -humedadMin: double
+        -temperaturaMax: double
+        +copiar() UmbralesLote
+        +setHumedadMin(v) void
+    }
+
+    class CatalogoLotes {
+        -plantillas: Map~String, Lote~
+        +registrar(clave, plantilla) void
+        +crear(clave, nombre, area) Lote
+        +claves() Set~String~
+    }
+
+    class Sensor {
+        <<interface>>
+    }
+    class ActuadorRiego {
+        <<interface>>
+    }
+
+    Cloneable <|.. Lote
+    Lote *--> UmbralesLote : copia profunda
+    Lote o--> Sensor : lista nueva
+    Lote o--> ActuadorRiego : se comparte
+    CatalogoLotes o--> Lote : plantillas
+    CatalogoLotes ..> Lote : clone()
+
+    note for Lote "clone(): super.clone() da la copia superficial;
+    despues se duplican las partes MUTABLES
+    (umbrales y la lista de sensores)."
+    note for CatalogoLotes "REGISTRO de prototipos: guarda plantillas
+    y entrega siempre clones."

@@ -1,0 +1,68 @@
+---
+title: Semana 4 - Patron Factory Method en el modulo de sensores
+---
+classDiagram
+    direction TB
+
+    class Sensor {
+        <<interface>>
+        +leer() Lectura
+        +getTipo() String
+    }
+    class SensorHumedad {
+        -id: String
+        +leer() Lectura
+        +getTipo() String
+    }
+    class SensorTemperatura {
+        -id: String
+        +leer() Lectura
+        +getTipo() String
+    }
+    class SensorPH {
+        -id: String
+        +leer() Lectura
+        +getTipo() String
+    }
+
+    class CreadorSensor {
+        <<abstract>>
+        #crearSensor(id) Sensor*
+        +tomarLectura(id) Lectura
+    }
+    class CreadorHumedad {
+        #crearSensor(id) Sensor
+    }
+    class CreadorTemperatura {
+        #crearSensor(id) Sensor
+    }
+    class CreadorPH {
+        #crearSensor(id) Sensor
+    }
+
+    class Lectura {
+        -idSensor: String
+        -tipo: String
+        -valor: double
+        -unidad: String
+        +toString() String
+    }
+
+    Sensor <|.. SensorHumedad
+    Sensor <|.. SensorTemperatura
+    Sensor <|.. SensorPH
+
+    CreadorSensor <|-- CreadorHumedad
+    CreadorSensor <|-- CreadorTemperatura
+    CreadorSensor <|-- CreadorPH
+
+    CreadorSensor ..> Sensor : crea
+    Sensor ..> Lectura : produce
+
+    CreadorHumedad ..> SensorHumedad : instancia
+    CreadorTemperatura ..> SensorTemperatura : instancia
+    CreadorPH ..> SensorPH : instancia
+
+    note for CreadorSensor "crearSensor() es el FACTORY METHOD:
+    abstracto, cada subclase decide el producto.
+    tomarLectura() usa el producto por su interfaz."

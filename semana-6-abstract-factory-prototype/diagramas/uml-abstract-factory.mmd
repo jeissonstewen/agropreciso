@@ -1,0 +1,86 @@
+---
+title: Semana 6 - Patron Abstract Factory - equipamiento por zona
+---
+classDiagram
+    direction TB
+
+    class FabricaEquipamiento {
+        <<interface>>
+        +crearSensorHumedad(id) Sensor
+        +crearSensorTemperatura(id) Sensor
+        +crearActuadorRiego() ActuadorRiego
+        +getZona() String
+    }
+    class FabricaInvernadero {
+        +crearSensorHumedad(id) Sensor
+        +crearSensorTemperatura(id) Sensor
+        +crearActuadorRiego() ActuadorRiego
+    }
+    class FabricaCampoAbierto {
+        +crearSensorHumedad(id) Sensor
+        +crearSensorTemperatura(id) Sensor
+        +crearActuadorRiego() ActuadorRiego
+    }
+
+    class Sensor {
+        <<interface>>
+        +leer() Lectura
+        +getTipo() String
+    }
+    class ActuadorRiego {
+        <<interface>>
+        +regar(minutos) void
+        +getTipo() String
+    }
+
+    class SensorHumedadInvernadero {
+        60 a 85 por ciento
+    }
+    class SensorTemperaturaInvernadero {
+        18 a 28 grados C
+    }
+    class RiegoGoteo {
+        2 L por minuto
+    }
+    class SensorHumedadCampo {
+        10 a 90 por ciento
+    }
+    class SensorTemperaturaCampo {
+        5 a 38 grados C
+    }
+    class RiegoAspersor {
+        15 L por minuto
+    }
+
+    class EstacionMonitoreo {
+        -zona: String
+        -sensores: List~Sensor~
+        -actuador: ActuadorRiego
+        +EstacionMonitoreo(fabrica, prefijoId)
+        +tomarLecturas() List~Lectura~
+    }
+
+    FabricaEquipamiento <|.. FabricaInvernadero
+    FabricaEquipamiento <|.. FabricaCampoAbierto
+
+    Sensor <|.. SensorHumedadInvernadero
+    Sensor <|.. SensorTemperaturaInvernadero
+    Sensor <|.. SensorHumedadCampo
+    Sensor <|.. SensorTemperaturaCampo
+    ActuadorRiego <|.. RiegoGoteo
+    ActuadorRiego <|.. RiegoAspersor
+
+    FabricaInvernadero ..> SensorHumedadInvernadero : crea
+    FabricaInvernadero ..> SensorTemperaturaInvernadero : crea
+    FabricaInvernadero ..> RiegoGoteo : crea
+    FabricaCampoAbierto ..> SensorHumedadCampo : crea
+    FabricaCampoAbierto ..> SensorTemperaturaCampo : crea
+    FabricaCampoAbierto ..> RiegoAspersor : crea
+
+    EstacionMonitoreo ..> FabricaEquipamiento : pide las piezas
+    EstacionMonitoreo o--> Sensor
+    EstacionMonitoreo o--> ActuadorRiego
+
+    note for FabricaEquipamiento "Una fabrica concreta produce SIEMPRE
+    la familia completa de su zona: mezclar
+    familias es imposible por construccion."

@@ -74,6 +74,12 @@ Los tres elementos del patrón son el atributo estático privado que guarda la i
 constructor privado que impide crear objetos desde fuera, y el método estático `getInstancia()`
 que sirve de punto de acceso global.
 
+## Diagrama UML de la Semana 3
+
+![Diagrama UML del patrón Singleton](../semana-3-singleton/diagramas/uml-singleton.png)
+
+Fuente del diagrama: [`semana-3-singleton/diagramas/uml-singleton.mmd`](../semana-3-singleton/diagramas/uml-singleton.mmd).
+
 ## Evidencias de la Semana 3
 
 ### Captura 1 — Los tres elementos del patrón
@@ -190,6 +196,18 @@ catálogo GoF. El Factory Method exige la jerarquía de creadores que se ve arri
 Los rangos de simulación de cada sensor son: humedad de 10 a 90 %, temperatura de 5 a 38 °C, pH
 de 4.5 a 8.5 y luminosidad de 200 a 2000 lux. El valor se genera aleatoriamente dentro del rango
 en cada lectura.
+
+## Diagrama UML de la Semana 4
+
+![Diagrama UML del patrón Factory Method](diagramas/uml-factory-method.png)
+
+Se ven las dos jerarquías paralelas que exige el patrón: la de productos, encabezada por la
+interfaz `Sensor`, y la de creadores, encabezada por la clase abstracta `CreadorSensor`. El
+*factory method* es `crearSensor()`, en cursiva por ser abstracto: cada creador concreto lo
+implementa devolviendo su propio producto. `tomarLectura()` es la operación real del sistema y
+trabaja contra la interfaz `Sensor`, por eso no conoce ninguna clase concreta.
+
+Fuente del diagrama: [`diagramas/uml-factory-method.mmd`](diagramas/uml-factory-method.mmd).
 
 ## Evidencias de la Semana 4
 

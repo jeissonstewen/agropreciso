@@ -83,6 +83,18 @@ globales. El director solo habla con la interfaz `ReporteBuilder`: si mañana ex
 
 ---
 
+## Diagrama UML
+
+![Diagrama UML del patrón Builder](diagramas/uml-builder.png)
+
+`DirectorReportes` solo conoce la interfaz `ReporteBuilder`, nunca al builder concreto ni al
+producto que este arma. `ReporteConsolaBuilder` acumula las partes y es el único que construye
+`ReporteFinca`, cuyo constructor es de paquete: por eso ningún otro objeto puede crear un reporte
+a medio armar. La flecha punteada de `ReporteConsolaBuilder` a `ReporteFinca` es la creación del
+producto en `construir()`.
+
+Fuente del diagrama: [`diagramas/uml-builder.mmd`](diagramas/uml-builder.mmd).
+
 ## Evidencias
 
 Estas son las pruebas que ejecutamos sobre el prototipo para comprobar que el patrón Builder

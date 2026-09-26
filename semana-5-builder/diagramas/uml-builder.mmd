@@ -1,0 +1,55 @@
+---
+title: Semana 5 - Patron Builder en el modulo de reportes
+---
+classDiagram
+    direction LR
+
+    class DirectorReportes {
+        -builder: ReporteBuilder
+        +reporteOperario(lecturas) ReporteFinca
+        +reporteGerencial(lecturas, inventario) ReporteFinca
+        -alertasDesde(lecturas) List~String~
+    }
+
+    class ReporteBuilder {
+        <<interface>>
+        +conTitulo(titulo) ReporteBuilder
+        +conEncabezado(finca, responsable) ReporteBuilder
+        +conLecturas(lecturas) ReporteBuilder
+        +conAlertas(alertas) ReporteBuilder
+        +conInventario(items) ReporteBuilder
+        +conResumen() ReporteBuilder
+        +construir() ReporteFinca
+    }
+
+    class ReporteConsolaBuilder {
+        -titulo: String
+        -finca: String
+        -lecturas: List~Lectura~
+        -alertas: List~String~
+        -inventario: List~String~
+        -conResumen: boolean
+        +construir() ReporteFinca
+        -reiniciar() void
+    }
+
+    class ReporteFinca {
+        -titulo: String
+        -finca: String
+        -lecturas: List~Lectura~
+        -alertas: List~String~
+        -inventario: List~String~
+        ~ReporteFinca(...)
+        +contarSecciones() int
+        +imprimir() void
+    }
+
+    DirectorReportes o--> ReporteBuilder : usa
+    ReporteBuilder <|.. ReporteConsolaBuilder
+    ReporteConsolaBuilder ..> ReporteFinca : construye
+    DirectorReportes ..> ReporteFinca : devuelve
+
+    note for ReporteFinca "PRODUCTO inmutable: constructor de paquete,
+    solo el builder puede crearlo."
+    note for DirectorReportes "DIRECTOR: conoce las recetas
+    (que partes y en que orden), no como se arman."

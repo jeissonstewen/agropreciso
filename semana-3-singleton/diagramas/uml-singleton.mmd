@@ -1,0 +1,43 @@
+---
+title: Semana 3 - Patron Singleton en sesion y configuracion
+---
+classDiagram
+    direction LR
+
+    class SesionUsuario {
+        -instancia: SesionUsuario$
+        -USUARIOS_DUMMY: String[][]$
+        -usuario: String
+        -rol: String
+        -activa: boolean
+        -SesionUsuario()
+        +getInstancia() SesionUsuario$
+        +iniciarSesion(usuario, clave) boolean
+        +cerrarSesion() void
+        +tienePermiso(rolRequerido) boolean
+    }
+
+    class ConfiguracionSistema {
+        -INSTANCIA: ConfiguracionSistema$
+        -nombreFinca: String
+        -umbralHumedadMin: double
+        -tempMaxCadenaFrio: double
+        -ConfiguracionSistema()
+        +getInstancia() ConfiguracionSistema$
+        +getUmbralHumedadMin() double
+        +setUmbralHumedadMin(valor) void
+    }
+
+    class ModuloRiego {
+        +ejecutar() void
+    }
+
+    SesionUsuario --> SesionUsuario : instancia unica
+    ConfiguracionSistema --> ConfiguracionSistema : instancia unica
+    ModuloRiego ..> SesionUsuario : getInstancia()
+    ModuloRiego ..> ConfiguracionSistema : getInstancia()
+
+    note for SesionUsuario "Variante LAZY: se crea en la primera
+    llamada. getInstancia() es synchronized."
+    note for ConfiguracionSistema "Variante EAGER: static final,
+    creada al cargar la clase."
