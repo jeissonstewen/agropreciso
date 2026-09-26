@@ -10,7 +10,7 @@
 [![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Tipo](https://img.shields.io/badge/Aplicación-Consola-blue)](#-cómo-ejecutar)
 [![Datos](https://img.shields.io/badge/Datos-Simulados%20(sin%20BD)-lightgrey)](#-alcance-y-restricciones)
-[![Patrones](https://img.shields.io/badge/Patrones-5%2F14-yellow)](#-hoja-de-ruta-de-patrones)
+[![Patrones](https://img.shields.io/badge/Patrones-7%2F15-yellow)](#-hoja-de-ruta-de-patrones)
 
 </div>
 
@@ -43,6 +43,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 4 — Factory Method](#semana-4--patrón-factory-method)
   - [Semana 5 — Builder](#semana-5--patrón-builder)
   - [Semana 6 — Abstract Factory y Prototype](#semana-6--patrones-abstract-factory-y-prototype)
+  - [Semana 7 — Adapter y Bridge](#semana-7--patrones-adapter-y-bridge)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -89,10 +90,18 @@ agroprecision/
 │   ├── README.md
 │   ├── src/
 │   └── evidencias/
-└── semana-6-abstract-factory-prototype/   Patrones Abstract Factory y Prototype
-    ├── README.md
-    ├── src/
-    └── evidencias/
+├── semana-6-abstract-factory-prototype/   Patrones Abstract Factory y Prototype
+│   ├── README.md
+│   ├── src/
+│   ├── diagramas/                  Diagramas UML (fuente .mmd y .png)
+│   └── evidencias/
+├── semana-7-adapter-bridge/        Patrones Adapter y Bridge
+│   ├── README.md
+│   ├── src/
+│   ├── test/                       Pruebas unitarias con JUnit 5
+│   ├── diagramas/
+│   └── evidencias/
+└── lib/                            junit-platform-console-standalone (JUnit 5)
 ```
 
 | Carpeta / archivo | Contenido |
@@ -104,6 +113,8 @@ agroprecision/
 | [`semana-4-factory-method/`](semana-4-factory-method/) | Semana 4 — Factory Method en el módulo de sensores |
 | [`semana-5-builder/`](semana-5-builder/) | Semana 5 — Builder en el módulo de reportes |
 | [`semana-6-abstract-factory-prototype/`](semana-6-abstract-factory-prototype/) | Semana 6 — Abstract Factory (equipamiento por zona) y Prototype (plantillas de lote) |
+| [`semana-7-adapter-bridge/`](semana-7-adapter-bridge/) | Semana 7 — Adapter (clima externo) y Bridge (formatos de reporte), con pruebas unitarias |
+| [`lib/`](lib/) | JUnit 5 (jar autónomo) para las pruebas unitarias |
 
 ## ▶️ Cómo ejecutar
 
@@ -123,6 +134,16 @@ cd semana-5-builder/src && javac *.java && java MainDemoBuilder
 
 ```bash
 cd semana-6-abstract-factory-prototype/src && javac *.java && java MainDemoAbstractFactoryPrototype
+```
+
+```bash
+cd semana-7-adapter-bridge/src && javac *.java && java MainDemoAdapterBridge
+```
+
+Las pruebas unitarias de la Semana 7 se ejecutan con JUnit 5, sin Maven ni Gradle:
+
+```bash
+cd semana-7-adapter-bridge && ./pruebas.sh
 ```
 
 > Requiere **JDK 17 o superior** (también funciona con JDK 8+). El código no usa paquetes.
@@ -145,6 +166,7 @@ incluye además su código y las evidencias de las pruebas ejecutadas.
 | 4 | Factory Method | Sensores | [Ver](semana-4-factory-method/) | [Ver](semana-4-factory-method/src/) | [6 capturas](semana-4-factory-method/evidencias/) | _(pendiente)_ |
 | 5 | Builder | Reportes | [Ver](semana-5-builder/) | [Ver](semana-5-builder/src/) | [6 capturas](semana-5-builder/evidencias/) | _(pendiente)_ |
 | 6 | Abstract Factory · Prototype | Equipamiento y lotes | [Ver](semana-6-abstract-factory-prototype/) | [Ver](semana-6-abstract-factory-prototype/src/) | [6 capturas](semana-6-abstract-factory-prototype/evidencias/) | _(pendiente)_ |
+| 7 | Adapter · Bridge | Clima externo y reportes | [Ver](semana-7-adapter-bridge/) | [Ver](semana-7-adapter-bridge/src/) | [6 capturas](semana-7-adapter-bridge/evidencias/) | _(pendiente)_ |
 
 ### Semana 1 — Análisis de code smells (punto 4)
 
@@ -222,6 +244,23 @@ umbrales y de la lista de sensores, así que modificar un clon nunca altera la p
 📄 **[Documento completo de la Semana 6](semana-6-abstract-factory-prototype/)** — explicación de
 ambos patrones, código y las seis capturas de las pruebas.
 
+### Semana 7 — Patrones Adapter y Bridge
+
+**Adapter** integra un servicio meteorológico de un tercero que devuelve un `String` con la
+temperatura en Fahrenheit y la humedad como fracción. `AdaptadorClimaExterno` implementa nuestra
+interfaz `ProveedorClima` y compone al servicio, adaptando formato, unidades y tipo de retorno.
+`MonitorClima` decide el riego sin distinguir si los datos vienen de un sensor propio o de la API.
+
+**Bridge** separa qué se reporta de cómo se escribe: la jerarquía `Reporte` (estado, alertas) y la
+jerarquía `SalidaReporte` (consola, Markdown, CSV) varían por separado, unidas por una sola
+referencia. Seis combinaciones con cinco clases en lugar de seis.
+
+Es la primera semana con **pruebas unitarias**: 13 casos con JUnit 5, incluido uno que agrega un
+formato nuevo sin tocar la jerarquía de reportes.
+
+📄 **[Documento completo de la Semana 7](semana-7-adapter-bridge/)** — explicación de ambos
+patrones, diagramas UML, pruebas unitarias y las seis capturas.
+
 ---
 
 ## 🗺️ Hoja de ruta de patrones
@@ -236,15 +275,16 @@ del curso se sustentó cada uno.
 | 3 | **Builder** | Creacional | Reportes | 5 | ✅ Completado |
 | 4 | **Abstract Factory** | Creacional | Equipamiento por zona | 6 | ✅ Completado |
 | 5 | **Prototype** | Creacional | Plantillas de lote | 6 | ✅ Completado |
-| 6 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
-| 7 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
-| 8 | Decorator | Estructural | Lecturas | — | ⏳ Pendiente |
-| 9 | Adapter | Estructural | Servicio de clima externo | — | ⏳ Pendiente |
-| 10 | Facade | Estructural | Menú de consola | — | ⏳ Pendiente |
-| 11 | Command | Comportamiento | Acciones del menú | — | ⏳ Pendiente |
-| 12 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
-| 13 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
-| 14 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
+| 6 | **Adapter** | Estructural | Servicio de clima externo | 7 | ✅ Completado |
+| 7 | **Bridge** | Estructural | Formatos de reporte | 7 | ✅ Completado |
+| 8 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
+| 9 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
+| 10 | Decorator | Estructural | Lecturas | — | ⏳ Pendiente |
+| 11 | Facade | Estructural | Menú de consola | — | ⏳ Pendiente |
+| 12 | Command | Comportamiento | Acciones del menú | — | ⏳ Pendiente |
+| 13 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
+| 14 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
+| 15 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
 
 ## 🧩 Módulos del sistema
 

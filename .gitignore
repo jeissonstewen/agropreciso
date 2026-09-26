@@ -33,3 +33,6 @@ entregable-docente/
 
 # --- Talleres de clase (no versionables) ---
 talleres/
+
+# --- Compilados de las pruebas (semana 7) ---
+semana-*/out/

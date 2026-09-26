@@ -1,0 +1,53 @@
+---
+title: Semana 7 - Patron Bridge - reportes por formato de salida
+---
+classDiagram
+    direction TB
+
+    class Reporte {
+        <<abstract>>
+        #salida: SalidaReporte
+        +generar()* void
+        +getNombre()* String
+        +describir() String
+    }
+    class ReporteEstado {
+        -finca: String
+        -lecturas: List~Lectura~
+        +generar() void
+    }
+    class ReporteAlertas {
+        -alertas: List~String~
+        +generar() void
+    }
+
+    class SalidaReporte {
+        <<interface>>
+        +escribirTitulo(titulo) void
+        +escribirLinea(texto) void
+        +escribirTabla(encabezados, filas) void
+        +cerrar() void
+        +getFormato() String
+    }
+    class SalidaConsola {
+        +getContenido() String
+    }
+    class SalidaMarkdown {
+        +getContenido() String
+    }
+    class SalidaCsv {
+        -escapar(valor) String
+    }
+
+    Reporte <|-- ReporteEstado
+    Reporte <|-- ReporteAlertas
+    SalidaReporte <|.. SalidaConsola
+    SalidaReporte <|.. SalidaMarkdown
+    SalidaReporte <|.. SalidaCsv
+    Reporte o--> SalidaReporte : EL PUENTE
+
+    note for Reporte "ABSTRACCION: decide QUE se escribe.
+    Delega el COMO en el implementador."
+    note for SalidaReporte "IMPLEMENTADOR: decide COMO se escribe.
+    2 reportes x 3 formatos = 6 combinaciones
+    con 2 + 3 = 5 clases, no 6."

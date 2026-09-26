@@ -1,0 +1,58 @@
+---
+title: Semana 7 - Patron Adapter - servicio de clima externo
+---
+classDiagram
+    direction LR
+
+    class ProveedorClima {
+        <<interface>>
+        +obtenerTemperatura() Lectura
+        +obtenerHumedad() Lectura
+        +getOrigen() String
+    }
+
+    class AdaptadorClimaExterno {
+        -servicio: ServicioClimaExterno
+        -codigoEstacion: String
+        +obtenerTemperatura() Lectura
+        +obtenerHumedad() Lectura
+        -leerCampo(clave) double
+    }
+
+    class ProveedorSensoresPropios {
+        -sensorTemperatura: Sensor
+        -sensorHumedad: Sensor
+        +obtenerTemperatura() Lectura
+        +obtenerHumedad() Lectura
+    }
+
+    class ServicioClimaExterno {
+        +fetchWeather(stationCode) String
+    }
+
+    class MonitorClima {
+        -proveedor: ProveedorClima
+        -umbralHumedadMin: double
+        +requiereRiego() boolean
+        +informar() void
+    }
+
+    class Lectura {
+        -tipo: String
+        -valor: double
+        -unidad: String
+    }
+
+    ProveedorClima <|.. AdaptadorClimaExterno
+    ProveedorClima <|.. ProveedorSensoresPropios
+    AdaptadorClimaExterno o--> ServicioClimaExterno : adapta
+    MonitorClima --> ProveedorClima : usa
+    ProveedorClima ..> Lectura : devuelve
+
+    note for ServicioClimaExterno "ADAPTEE: sistema de un tercero.
+    Devuelve un String, temperatura en F
+    y humedad como fraccion 0 a 1."
+    note for AdaptadorClimaExterno "ADAPTER de objeto: COMPONE al adaptado.
+    Adapta formato, unidades y tipo de retorno."
+    note for MonitorClima "CLIENTE: solo conoce ProveedorClima.
+    No distingue el origen de los datos."

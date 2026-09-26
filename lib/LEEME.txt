@@ -1,0 +1,13 @@
+JUnit 5 (console standalone) para las pruebas unitarias del proyecto.
+
+Esta carpeta se llama "lib" y esta en la RAIZ a proposito: es la ruta que la extension de Java
+de VS Code busca por defecto (java.project.referencedLibraries = lib/**/*.jar) cuando el
+proyecto no usa Maven ni Gradle. Si el jar se guarda dentro de la carpeta de una semana, el
+editor no lo encuentra y marca errores falsos del tipo "assertEquals is undefined", aunque
+las pruebas compilen y pasen desde la terminal.
+
+Se usa sin Maven ni Gradle:
+
+    cd semana-7-adapter-bridge && ./pruebas.sh
+
+Version: junit-platform-console-standalone 1.11.4
