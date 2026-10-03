@@ -1,0 +1,59 @@
+---
+title: Semana 8 - Patron Decorator - sensores
+---
+classDiagram
+    direction TB
+
+    class Sensor {
+        <<interface>>
+        +leer() Lectura
+        +getTipo() String
+    }
+
+    class SensorFijo {
+        -valor: double
+        +leer() Lectura
+    }
+    class SensorHumedad {
+        +leer() Lectura
+    }
+
+    class SensorDecorador {
+        <<abstract>>
+        #sensorEnvuelto: Sensor
+        +leer() Lectura
+        +getDescripcion()* String
+    }
+
+    class SensorConCalibracion {
+        -offset: double
+        +leer() Lectura
+    }
+    class SensorConValidacion {
+        -minimo: double
+        -maximo: double
+        -correcciones: int
+        +leer() Lectura
+        +getCorrecciones() int
+    }
+    class SensorConRegistro {
+        -historial: List~Lectura~
+        +leer() Lectura
+        +getHistorial() List~Lectura~
+    }
+
+    Sensor <|.. SensorFijo
+    Sensor <|.. SensorHumedad
+    Sensor <|.. SensorDecorador
+    SensorDecorador o--> Sensor : envuelve
+    SensorDecorador <|-- SensorConCalibracion
+    SensorDecorador <|-- SensorConValidacion
+    SensorDecorador <|-- SensorConRegistro
+
+    note for SensorDecorador "ES un Sensor y TIENE un Sensor.
+    Esa doble relacion permite apilar:
+    registro(calibracion(validacion(sensor)))
+    y el resultado sigue siendo un Sensor."
+    note for SensorConCalibracion "ALTERA el valor"
+    note for SensorConValidacion "SUSTITUYE el valor fuera de rango"
+    note for SensorConRegistro "NO altera el valor: agrega un efecto"

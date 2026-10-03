@@ -1,0 +1,61 @@
+---
+title: Semana 8 - Patron Composite - estructura de la finca
+---
+classDiagram
+    direction TB
+
+    class ComponenteFinca {
+        <<interface>>
+        +getNombre() String
+        +getAreaHectareas() double
+        +contarSensores() int
+        +monitorear() void
+        +describir(nivel) String
+    }
+
+    class ZonaCultivo {
+        -nombre: String
+        -hijos: List~ComponenteFinca~
+        +agregar(componente) ZonaCultivo
+        +quitar(componente) boolean
+        +getHijos() List~ComponenteFinca~
+        +getAreaHectareas() double
+        +contarSensores() int
+        +monitorear() void
+    }
+
+    class Lote {
+        -nombre: String
+        -cultivo: String
+        -areaHectareas: double
+        -umbrales: UmbralesLote
+        -sensores: List~Sensor~
+        -actuador: ActuadorRiego
+        +agregarSensor(sensor) Lote
+        +getAreaHectareas() double
+        +contarSensores() int
+        +monitorear() void
+    }
+
+    class Sensor {
+        <<interface>>
+        +leer() Lectura
+    }
+    class ActuadorRiego {
+        <<interface>>
+        +regar(minutos) void
+    }
+
+    ComponenteFinca <|.. ZonaCultivo
+    ComponenteFinca <|.. Lote
+    ZonaCultivo o--> "0..*" ComponenteFinca : hijos
+    Lote o--> "0..*" Sensor
+    Lote o--> ActuadorRiego
+
+    note for ZonaCultivo "COMPUESTO: no calcula, delega en sus hijos
+    y combina. Como un hijo puede ser otra zona,
+    el arbol admite cualquier profundidad.
+    agregar y quitar viven SOLO aqui: variante
+    de SEGURIDAD del patron."
+    note for Lote "HOJA: hace el trabajo real.
+    Sus operaciones no son recursivas."

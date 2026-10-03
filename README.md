@@ -10,7 +10,7 @@
 [![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Tipo](https://img.shields.io/badge/Aplicación-Consola-blue)](#-cómo-ejecutar)
 [![Datos](https://img.shields.io/badge/Datos-Simulados%20(sin%20BD)-lightgrey)](#-alcance-y-restricciones)
-[![Patrones](https://img.shields.io/badge/Patrones-7%2F15-yellow)](#-hoja-de-ruta-de-patrones)
+[![Patrones](https://img.shields.io/badge/Patrones-9%2F16-yellow)](#-hoja-de-ruta-de-patrones)
 
 </div>
 
@@ -44,6 +44,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 5 — Builder](#semana-5--patrón-builder)
   - [Semana 6 — Abstract Factory y Prototype](#semana-6--patrones-abstract-factory-y-prototype)
   - [Semana 7 — Adapter y Bridge](#semana-7--patrones-adapter-y-bridge)
+  - [Semana 8 — Composite y Decorator](#semana-8--patrones-composite-y-decorator)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -101,6 +102,12 @@ agroprecision/
 │   ├── test/                       Pruebas unitarias con JUnit 5
 │   ├── diagramas/
 │   └── evidencias/
+├── semana-8-composite-decorator/   Patrones Composite y Decorator
+│   ├── README.md
+│   ├── src/
+│   ├── test/
+│   ├── diagramas/
+│   └── evidencias/
 └── lib/                            junit-platform-console-standalone (JUnit 5)
 ```
 
@@ -114,6 +121,7 @@ agroprecision/
 | [`semana-5-builder/`](semana-5-builder/) | Semana 5 — Builder en el módulo de reportes |
 | [`semana-6-abstract-factory-prototype/`](semana-6-abstract-factory-prototype/) | Semana 6 — Abstract Factory (equipamiento por zona) y Prototype (plantillas de lote) |
 | [`semana-7-adapter-bridge/`](semana-7-adapter-bridge/) | Semana 7 — Adapter (clima externo) y Bridge (formatos de reporte), con pruebas unitarias |
+| [`semana-8-composite-decorator/`](semana-8-composite-decorator/) | Semana 8 — Composite (estructura de la finca) y Decorator (sensores), con pruebas unitarias |
 | [`lib/`](lib/) | JUnit 5 (jar autónomo) para las pruebas unitarias |
 
 ## ▶️ Cómo ejecutar
@@ -140,10 +148,18 @@ cd semana-6-abstract-factory-prototype/src && javac *.java && java MainDemoAbstr
 cd semana-7-adapter-bridge/src && javac *.java && java MainDemoAdapterBridge
 ```
 
-Las pruebas unitarias de la Semana 7 se ejecutan con JUnit 5, sin Maven ni Gradle:
+```bash
+cd semana-8-composite-decorator/src && javac *.java && java MainDemoCompositeDecorator
+```
+
+Las pruebas unitarias se ejecutan con JUnit 5, sin Maven ni Gradle:
 
 ```bash
 cd semana-7-adapter-bridge && ./pruebas.sh
+```
+
+```bash
+cd semana-8-composite-decorator && ./pruebas.sh
 ```
 
 > Requiere **JDK 17 o superior** (también funciona con JDK 8+). El código no usa paquetes.
@@ -167,6 +183,7 @@ incluye además su código y las evidencias de las pruebas ejecutadas.
 | 5 | Builder | Reportes | [Ver](semana-5-builder/) | [Ver](semana-5-builder/src/) | [6 capturas](semana-5-builder/evidencias/) | _(pendiente)_ |
 | 6 | Abstract Factory · Prototype | Equipamiento y lotes | [Ver](semana-6-abstract-factory-prototype/) | [Ver](semana-6-abstract-factory-prototype/src/) | [6 capturas](semana-6-abstract-factory-prototype/evidencias/) | _(pendiente)_ |
 | 7 | Adapter · Bridge | Clima externo y reportes | [Ver](semana-7-adapter-bridge/) | [Ver](semana-7-adapter-bridge/src/) | [6 capturas](semana-7-adapter-bridge/evidencias/) | _(pendiente)_ |
+| 8 | Composite · Decorator | Estructura de la finca y sensores | [Ver](semana-8-composite-decorator/) | [Ver](semana-8-composite-decorator/src/) | [6 capturas](semana-8-composite-decorator/evidencias/) | _(pendiente)_ |
 
 ### Semana 1 — Análisis de code smells (punto 4)
 
@@ -261,6 +278,21 @@ formato nuevo sin tocar la jerarquía de reportes.
 📄 **[Documento completo de la Semana 7](semana-7-adapter-bridge/)** — explicación de ambos
 patrones, diagramas UML, pruebas unitarias y las seis capturas.
 
+### Semana 8 — Patrones Composite y Decorator
+
+**Composite** organiza la finca como un árbol: `ZonaCultivo` agrupa `ComponenteFinca`, que pueden
+ser lotes (hojas) u otras zonas. El área y el número de sensores se calculan recorriendo el árbol,
+y el mismo método del cliente sirve para un lote suelto o para la finca entera. No existe una clase
+`Finca`: la finca es la zona raíz, así que el árbol admite cualquier profundidad.
+
+**Decorator** añade a los sensores lo que la instalación necesita —calibración, validación y
+registro— envolviéndolos en vez de modificarlos. Los decoradores se apilan y el resultado sigue
+siendo un `Sensor`, así que entra sin cambios en un lote del árbol. El orden de la pila cambia el
+resultado, y eso es una ventaja del patrón, no un defecto.
+
+📄 **[Documento completo de la Semana 8](semana-8-composite-decorator/)** — explicación de ambos
+patrones, diagramas UML, 20 pruebas unitarias y las seis capturas.
+
 ---
 
 ## 🗺️ Hoja de ruta de patrones
@@ -277,14 +309,15 @@ del curso se sustentó cada uno.
 | 5 | **Prototype** | Creacional | Plantillas de lote | 6 | ✅ Completado |
 | 6 | **Adapter** | Estructural | Servicio de clima externo | 7 | ✅ Completado |
 | 7 | **Bridge** | Estructural | Formatos de reporte | 7 | ✅ Completado |
-| 8 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
-| 9 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
-| 10 | Decorator | Estructural | Lecturas | — | ⏳ Pendiente |
-| 11 | Facade | Estructural | Menú de consola | — | ⏳ Pendiente |
-| 12 | Command | Comportamiento | Acciones del menú | — | ⏳ Pendiente |
-| 13 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
-| 14 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
-| 15 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
+| 8 | **Composite** | Estructural | Estructura de la finca | 8 | ✅ Completado |
+| 9 | **Decorator** | Estructural | Sensores y lecturas | 8 | ✅ Completado |
+| 10 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
+| 11 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
+| 12 | Facade | Estructural | Menú de consola | — | ⏳ Pendiente |
+| 13 | Command | Comportamiento | Acciones del menú | — | ⏳ Pendiente |
+| 14 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
+| 15 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
+| 16 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
 
 ## 🧩 Módulos del sistema
 
