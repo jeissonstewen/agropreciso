@@ -10,7 +10,7 @@
 [![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Tipo](https://img.shields.io/badge/Aplicación-Consola-blue)](#-cómo-ejecutar)
 [![Datos](https://img.shields.io/badge/Datos-Simulados%20(sin%20BD)-lightgrey)](#-alcance-y-restricciones)
-[![Patrones](https://img.shields.io/badge/Patrones-9%2F16-yellow)](#-hoja-de-ruta-de-patrones)
+[![Patrones](https://img.shields.io/badge/Patrones-10%2F16-yellow)](#-hoja-de-ruta-de-patrones)
 
 </div>
 
@@ -45,6 +45,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 6 — Abstract Factory y Prototype](#semana-6--patrones-abstract-factory-y-prototype)
   - [Semana 7 — Adapter y Bridge](#semana-7--patrones-adapter-y-bridge)
   - [Semana 8 — Composite y Decorator](#semana-8--patrones-composite-y-decorator)
+  - [Semana 9 — Decorator y Facade](#semana-9--patrones-decorator-y-facade)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -108,6 +109,12 @@ agroprecision/
 │   ├── test/
 │   ├── diagramas/
 │   └── evidencias/
+├── semana-9-decorator-facade/      Patrones Decorator (clima) y Facade
+│   ├── README.md
+│   ├── src/
+│   ├── test/
+│   ├── diagramas/
+│   └── evidencias/
 └── lib/                            junit-platform-console-standalone (JUnit 5)
 ```
 
@@ -122,6 +129,7 @@ agroprecision/
 | [`semana-6-abstract-factory-prototype/`](semana-6-abstract-factory-prototype/) | Semana 6 — Abstract Factory (equipamiento por zona) y Prototype (plantillas de lote) |
 | [`semana-7-adapter-bridge/`](semana-7-adapter-bridge/) | Semana 7 — Adapter (clima externo) y Bridge (formatos de reporte), con pruebas unitarias |
 | [`semana-8-composite-decorator/`](semana-8-composite-decorator/) | Semana 8 — Composite (estructura de la finca) y Decorator (sensores), con pruebas unitarias |
+| [`semana-9-decorator-facade/`](semana-9-decorator-facade/) | Semana 9 — Decorator sobre el servicio de clima y Facade de todo el sistema |
 | [`lib/`](lib/) | JUnit 5 (jar autónomo) para las pruebas unitarias |
 
 ## ▶️ Cómo ejecutar
@@ -152,6 +160,10 @@ cd semana-7-adapter-bridge/src && javac *.java && java MainDemoAdapterBridge
 cd semana-8-composite-decorator/src && javac *.java && java MainDemoCompositeDecorator
 ```
 
+```bash
+cd semana-9-decorator-facade/src && javac *.java && java MainDemoDecoratorFacade
+```
+
 Las pruebas unitarias se ejecutan con JUnit 5, sin Maven ni Gradle:
 
 ```bash
@@ -160,6 +172,10 @@ cd semana-7-adapter-bridge && ./pruebas.sh
 
 ```bash
 cd semana-8-composite-decorator && ./pruebas.sh
+```
+
+```bash
+cd semana-9-decorator-facade && ./pruebas.sh
 ```
 
 > Requiere **JDK 17 o superior** (también funciona con JDK 8+). El código no usa paquetes.
@@ -184,6 +200,7 @@ incluye además su código y las evidencias de las pruebas ejecutadas.
 | 6 | Abstract Factory · Prototype | Equipamiento y lotes | [Ver](semana-6-abstract-factory-prototype/) | [Ver](semana-6-abstract-factory-prototype/src/) | [6 capturas](semana-6-abstract-factory-prototype/evidencias/) | _(pendiente)_ |
 | 7 | Adapter · Bridge | Clima externo y reportes | [Ver](semana-7-adapter-bridge/) | [Ver](semana-7-adapter-bridge/src/) | [6 capturas](semana-7-adapter-bridge/evidencias/) | _(pendiente)_ |
 | 8 | Composite · Decorator | Estructura de la finca y sensores | [Ver](semana-8-composite-decorator/) | [Ver](semana-8-composite-decorator/src/) | [6 capturas](semana-8-composite-decorator/evidencias/) | _(pendiente)_ |
+| 9 | Decorator · Facade | Clima y fachada del sistema | [Ver](semana-9-decorator-facade/) | [Ver](semana-9-decorator-facade/src/) | [6 capturas](semana-9-decorator-facade/evidencias/) | _(pendiente)_ |
 
 ### Semana 1 — Análisis de code smells (punto 4)
 
@@ -293,6 +310,22 @@ resultado, y eso es una ventaja del patrón, no un defecto.
 📄 **[Documento completo de la Semana 8](semana-8-composite-decorator/)** — explicación de ambos
 patrones, diagramas UML, 20 pruebas unitarias y las seis capturas.
 
+### Semana 9 — Patrones Decorator y Facade
+
+**Decorator** se aplica esta vez al **servicio de clima**: `ClimaConCache` evita repetir llamadas a
+la API de terceros y `ClimaConReintento` absorbe sus caídas pasajeras. A diferencia de los
+decoradores de la Semana 8, ninguno de los dos altera el valor: uno cambia *cuántas veces* se pide
+el dato y el otro *qué pasa cuando falla*. Es la misma estructura sobre otra interfaz.
+
+**Facade** pone una cara simple sobre todo lo construido hasta ahora. `FachadaAgroPrecision` expone
+`iniciarJornada()`, `monitorearFinca()`, `consultarClima()` y `emitirReporteEstado(formato)`, y por
+dentro orquesta los Singleton de sesión y configuración, el árbol Composite, los sensores
+decorados, el Adapter del clima y el Bridge de los reportes. `getFinca()` deja entrar al subsistema:
+la fachada simplifica, no encierra.
+
+📄 **[Documento completo de la Semana 9](semana-9-decorator-facade/)** — explicación de ambos
+patrones, diagramas UML, 22 pruebas unitarias y las seis capturas.
+
 ---
 
 ## 🗺️ Hoja de ruta de patrones
@@ -310,10 +343,10 @@ del curso se sustentó cada uno.
 | 6 | **Adapter** | Estructural | Servicio de clima externo | 7 | ✅ Completado |
 | 7 | **Bridge** | Estructural | Formatos de reporte | 7 | ✅ Completado |
 | 8 | **Composite** | Estructural | Estructura de la finca | 8 | ✅ Completado |
-| 9 | **Decorator** | Estructural | Sensores y lecturas | 8 | ✅ Completado |
-| 10 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
-| 11 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
-| 12 | Facade | Estructural | Menú de consola | — | ⏳ Pendiente |
+| 9 | **Decorator** | Estructural | Sensores (S8) y servicio de clima (S9) | 8 · 9 | ✅ Completado |
+| 10 | **Facade** | Estructural | Fachada del sistema | 9 | ✅ Completado |
+| 11 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
+| 12 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
 | 13 | Command | Comportamiento | Acciones del menú | — | ⏳ Pendiente |
 | 14 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
 | 15 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |

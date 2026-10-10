@@ -1,0 +1,65 @@
+---
+title: Semana 9 - Patron Decorator aplicado al servicio de clima
+---
+classDiagram
+    direction TB
+
+    class ProveedorClima {
+        <<interface>>
+        +obtenerTemperatura() Lectura
+        +obtenerHumedad() Lectura
+        +getOrigen() String
+    }
+
+    class AdaptadorClimaExterno {
+        -servicio: ServicioClimaExterno
+        +obtenerTemperatura() Lectura
+    }
+
+    class ProveedorClimaDecorador {
+        <<abstract>>
+        #proveedorEnvuelto: ProveedorClima
+        +obtenerTemperatura() Lectura
+        +getDescripcion()* String
+    }
+
+    class ClimaConCache {
+        -temperaturaGuardada: Lectura
+        -humedadGuardada: Lectura
+        -aciertos: int
+        +obtenerTemperatura() Lectura
+        +getAciertos() int
+        +invalidar() void
+    }
+
+    class ClimaConReintento {
+        -maxIntentos: int
+        -reintentos: int
+        +obtenerTemperatura() Lectura
+        +getReintentos() int
+    }
+
+    class ServicioClimaExterno {
+        +fetchWeather(stationCode) String
+    }
+    class ServicioClimaInestable {
+        -fallosIniciales: int
+        -llamadas: int
+        +getLlamadas() int
+    }
+
+    ProveedorClima <|.. AdaptadorClimaExterno
+    ProveedorClima <|.. ProveedorClimaDecorador
+    ProveedorClimaDecorador o--> ProveedorClima : envuelve
+    ProveedorClimaDecorador <|-- ClimaConCache
+    ProveedorClimaDecorador <|-- ClimaConReintento
+    AdaptadorClimaExterno o--> ServicioClimaExterno : adapta
+    ServicioClimaExterno <|-- ServicioClimaInestable
+
+    note for ProveedorClimaDecorador "Misma estructura que SensorDecorador
+    de la Semana 8, sobre OTRA interfaz:
+    ES un ProveedorClima y TIENE uno."
+    note for ClimaConCache "No altera el valor:
+    cambia CUANTAS VECES se pide."
+    note for ClimaConReintento "No altera el valor:
+    cambia QUE PASA CUANDO FALLA."

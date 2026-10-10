@@ -1,0 +1,68 @@
+---
+title: Semana 9 - Patron Facade - la cara simple del subsistema
+---
+classDiagram
+    direction LR
+
+    class Cliente {
+        +main() void
+    }
+
+    class FachadaAgroPrecision {
+        -finca: ZonaCultivo
+        -lotes: List~Lote~
+        -clima: ProveedorClima
+        -configuracion: ConfiguracionSistema
+        +iniciarJornada(usuario, clave) boolean
+        +monitorearFinca() void
+        +consultarClima() void
+        +emitirReporteEstado(formato) void
+        +emitirReporteAlertas(formato) void
+        +cerrarJornada() void
+        +getFinca() ZonaCultivo
+    }
+
+    class SesionUsuario {
+        Singleton - Semana 3
+    }
+    class ConfiguracionSistema {
+        Singleton - Semana 3
+    }
+    class ZonaCultivo {
+        Composite - Semana 8
+    }
+    class Lote {
+        Hoja del Composite
+    }
+    class SensorDecorador {
+        Decorator - Semana 8
+    }
+    class ProveedorClima {
+        Adapter - Semana 7
+        Decorator - Semana 9
+    }
+    class Reporte {
+        Bridge - Semana 7
+    }
+    class SalidaReporte {
+        Implementador del Bridge
+    }
+
+    Cliente --> FachadaAgroPrecision : 4 llamadas
+    FachadaAgroPrecision ..> SesionUsuario
+    FachadaAgroPrecision ..> ConfiguracionSistema
+    FachadaAgroPrecision o--> ZonaCultivo
+    FachadaAgroPrecision o--> Lote
+    FachadaAgroPrecision o--> ProveedorClima
+    FachadaAgroPrecision ..> Reporte
+    ZonaCultivo o--> Lote
+    Lote o--> SensorDecorador
+    Reporte o--> SalidaReporte
+
+    note for FachadaAgroPrecision "FACHADA: una interfaz simple
+    para un subsistema de 8 patrones.
+    getFinca() deja entrar al subsistema:
+    simplificar no es encerrar."
+    note for Cliente "Sin fachada tendria que conocer
+    y ensamblar todas las clases
+    de la derecha."
