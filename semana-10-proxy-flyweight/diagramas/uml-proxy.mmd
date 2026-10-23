@@ -1,0 +1,58 @@
+---
+title: Semana 10 - Patron Proxy de proteccion
+---
+classDiagram
+    direction TB
+
+    class SistemaAgroPrecision {
+        <<interface>>
+        +iniciarJornada(usuario, clave) boolean
+        +monitorearFinca() void
+        +consultarClima() void
+        +emitirReporteEstado(formato) void
+        +emitirReporteAlertas(formato) void
+        +cerrarJornada() void
+    }
+
+    class ProxyAccesoSistema {
+        -sistemaReal: SistemaAgroPrecision
+        -accesosDenegados: int
+        +monitorearFinca() void
+        +emitirReporteEstado(formato) void
+        +getAccesosDenegados() int
+        -exigir(rolRequerido, operacion) void
+    }
+
+    class FachadaAgroPrecision {
+        -finca: ZonaCultivo
+        -clima: ProveedorClima
+        +monitorearFinca() void
+        +emitirReporteEstado(formato) void
+        +getFinca() ZonaCultivo
+    }
+
+    class SesionUsuario {
+        <<singleton>>
+        +getInstancia() SesionUsuario$
+        +tienePermiso(rolRequerido) boolean
+        +getRol() String
+    }
+
+    class Cliente {
+        +main() void
+    }
+
+    SistemaAgroPrecision <|.. ProxyAccesoSistema
+    SistemaAgroPrecision <|.. FachadaAgroPrecision
+    ProxyAccesoSistema o--> SistemaAgroPrecision : representa
+    ProxyAccesoSistema ..> SesionUsuario : consulta el rol
+    Cliente --> SistemaAgroPrecision : no sabe cual tiene
+
+    note for ProxyAccesoSistema "PROXY de PROTECCION: misma interfaz
+    que el objeto real. Si el rol no alcanza,
+    la llamada NO llega al subsistema."
+    note for SistemaAgroPrecision "No declara getFinca() a proposito:
+    quien sostiene la interfaz no puede
+    saltarse el control de acceso."
+    note for FachadaAgroPrecision "getFinca() solo es alcanzable
+    desde la clase concreta."

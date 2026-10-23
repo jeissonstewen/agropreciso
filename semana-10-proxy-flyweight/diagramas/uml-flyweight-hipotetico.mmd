@@ -1,0 +1,45 @@
+---
+title: Semana 10 - Flyweight - diseno HIPOTETICO (no implementado)
+---
+classDiagram
+    direction TB
+
+    class TipoSensor {
+        <<flyweight>>
+        -tipo: String
+        -unidad: String
+        -rangoMin: double
+        -rangoMax: double
+        +generarValor() double
+        +getTipo() String
+    }
+
+    class FabricaTiposSensor {
+        -cache: Map~String, TipoSensor~
+        +obtener(tipo) TipoSensor$
+        +tiposCreados() int$
+    }
+
+    class SensorIoT {
+        -id: String
+        -tipo: TipoSensor
+        +leer() Lectura
+    }
+
+    class Sensor {
+        <<interface>>
+        +leer() Lectura
+    }
+
+    Sensor <|.. SensorIoT
+    SensorIoT o--> TipoSensor : comparte
+    FabricaTiposSensor ..> TipoSensor : crea una vez
+    SensorIoT ..> FabricaTiposSensor : pide el tipo
+
+    note for TipoSensor "ESTADO INTRINSECO: igual para todos los
+    sensores del mismo tipo. Inmutable y compartido.
+    Una sola instancia por tipo."
+    note for SensorIoT "CONTEXTO. ESTADO EXTRINSECO: el id del
+    sensor fisico, propio de cada instancia."
+    note for FabricaTiposSensor "FABRICA DE FLYWEIGHTS: cachea en un Map.
+    Pedir HUMEDAD mil veces devuelve el MISMO objeto."
