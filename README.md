@@ -10,7 +10,7 @@
 [![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Tipo](https://img.shields.io/badge/Aplicación-Consola-blue)](#-cómo-ejecutar)
 [![Datos](https://img.shields.io/badge/Datos-Simulados%20(sin%20BD)-lightgrey)](#-alcance-y-restricciones)
-[![Patrones](https://img.shields.io/badge/Patrones-11%20implementados%20%2B%201%20analizado-yellow)](#-hoja-de-ruta-de-patrones)
+[![Patrones](https://img.shields.io/badge/Patrones-13%20implementados%20%2B%201%20analizado-yellow)](#-hoja-de-ruta-de-patrones)
 
 </div>
 
@@ -47,6 +47,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 8 — Composite y Decorator](#semana-8--patrones-composite-y-decorator)
   - [Semana 9 — Decorator y Facade](#semana-9--patrones-decorator-y-facade)
   - [Semana 10 — Proxy y Flyweight](#semana-10--patrones-proxy-y-flyweight)
+  - [Semana 12 — Chain of Responsibility y Command](#semana-12--patrones-chain-of-responsibility-y-command)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -123,6 +124,12 @@ agroprecision/
 │   ├── medicion/                   Banco de memoria que sustenta el Flyweight
 │   ├── diagramas/
 │   └── evidencias/
+├── semana-12-chain-command/        Patrones Chain of Responsibility y Command
+│   ├── README.md
+│   ├── src/
+│   ├── test/
+│   ├── diagramas/
+│   └── evidencias/
 └── lib/                            junit-platform-console-standalone (JUnit 5)
 ```
 
@@ -139,6 +146,7 @@ agroprecision/
 | [`semana-8-composite-decorator/`](semana-8-composite-decorator/) | Semana 8 — Composite (estructura de la finca) y Decorator (sensores), con pruebas unitarias |
 | [`semana-9-decorator-facade/`](semana-9-decorator-facade/) | Semana 9 — Decorator sobre el servicio de clima y Facade de todo el sistema |
 | [`semana-10-proxy-flyweight/`](semana-10-proxy-flyweight/) | Semana 10 — Proxy de protección por roles y análisis de no implementación del Flyweight |
+| [`semana-12-chain-command/`](semana-12-chain-command/) | Semana 12 — Chain of Responsibility (atención de incidencias) y Command (órdenes con bitácora y deshacer) |
 | [`lib/`](lib/) | JUnit 5 (jar autónomo) para las pruebas unitarias |
 
 ## ▶️ Cómo ejecutar
@@ -177,6 +185,10 @@ cd semana-9-decorator-facade/src && javac *.java && java MainDemoDecoratorFacade
 cd semana-10-proxy-flyweight/src && javac *.java && java MainDemoProxyFlyweight
 ```
 
+```bash
+cd semana-12-chain-command/src && javac *.java && java MainDemoChainCommand
+```
+
 Las pruebas unitarias se ejecutan con JUnit 5, sin Maven ni Gradle:
 
 ```bash
@@ -193,6 +205,10 @@ cd semana-9-decorator-facade && ./pruebas.sh
 
 ```bash
 cd semana-10-proxy-flyweight && ./pruebas.sh
+```
+
+```bash
+cd semana-12-chain-command && ./pruebas.sh
 ```
 
 La Semana 10 incluye además un banco de medición de memoria que sustenta la decisión de no
@@ -226,6 +242,7 @@ incluye además su código y las evidencias de las pruebas ejecutadas.
 | 8 | Composite · Decorator | Estructura de la finca y sensores | [Ver](semana-8-composite-decorator/) | [Ver](semana-8-composite-decorator/src/) | [6 capturas](semana-8-composite-decorator/evidencias/) | _(pendiente)_ |
 | 9 | Decorator · Facade | Clima y fachada del sistema | [Ver](semana-9-decorator-facade/) | [Ver](semana-9-decorator-facade/src/) | [6 capturas](semana-9-decorator-facade/evidencias/) | _(pendiente)_ |
 | 10 | Proxy · Flyweight* | Control de acceso por roles | [Ver](semana-10-proxy-flyweight/) | [Ver](semana-10-proxy-flyweight/src/) | [6 capturas](semana-10-proxy-flyweight/evidencias/) | _(pendiente)_ |
+| 12 | Chain of Responsibility · Command | Incidencias y órdenes | [Ver](semana-12-chain-command/) | [Ver](semana-12-chain-command/src/) | [6 capturas](semana-12-chain-command/evidencias/) | _(pendiente)_ |
 
 > \* En la Semana 10 el patrón **Flyweight no se implementa**: se analiza y se documenta, con una
 > medición de memoria, por qué no corresponde hacerlo a la escala actual del prototipo y bajo qué
@@ -372,6 +389,26 @@ su UML, y las tres condiciones bajo las cuales sí correspondería implementarlo
 📄 **[Documento completo de la Semana 10](semana-10-proxy-flyweight/)** — el proxy implementado con
 13 pruebas unitarias, el análisis del Flyweight con su medición y las seis capturas.
 
+### Semana 12 — Patrones Chain of Responsibility y Command
+
+Los dos primeros patrones **de comportamiento**, después de cerrar las familias creacional y
+estructural.
+
+**Chain of Responsibility** escala una incidencia por la jerarquía de la finca: el operario atiende
+lo leve, el agrónomo lo que exige criterio técnico y el administrador lo que implica gasto. El
+eslabón competente atiende y **la cadena se detiene**; si ninguno puede, queda constancia. Reordenar
+la cadena cambia el recorrido sin tocar un solo manejador.
+
+**Command** convierte la acción resultante en un objeto: `PanelDeControl` la ejecuta, la registra en
+una bitácora, la programa para después o la deshace. Y lo que no se puede deshacer se declara:
+`OrdenRegar` es irreversible —el agua ya se aplicó— y el panel la rechaza sin sacarla del historial.
+
+Los dos se encuentran en una frase: **la cadena decide quién y qué; el Command encapsula la acción;
+el panel la ejecuta**. La cadena nunca ejecuta nada, y hay una prueba que lo verifica.
+
+📄 **[Documento completo de la Semana 12](semana-12-chain-command/)** — explicación de ambos
+patrones, diagramas UML, 25 pruebas unitarias y las seis capturas.
+
 ---
 
 ## 🗺️ Hoja de ruta de patrones
@@ -393,12 +430,13 @@ del curso se sustentó cada uno.
 | 10 | **Facade** | Estructural | Fachada del sistema | 9 | ✅ Completado |
 | 11 | **Proxy** | Estructural | Control de acceso por roles | 10 | ✅ Completado |
 | 12 | **Flyweight** | Estructural | Tipos de sensor | 10 | ⚖️ Analizado, no implementado |
-| 13 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
-| 14 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
-| 15 | Command | Comportamiento | Acciones del menú | — | ⏳ Pendiente |
-| 16 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
-| 17 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
-| 18 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
+| 13 | **Chain of Responsibility** | Comportamiento | Atención de incidencias | 12 | ✅ Completado |
+| 14 | **Command** | Comportamiento | Órdenes de operación | 12 | ✅ Completado |
+| 15 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
+| 16 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
+| 17 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
+| 18 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
+| 19 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
 
 ## 🧩 Módulos del sistema
 

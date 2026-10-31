@@ -1,0 +1,73 @@
+---
+title: Semana 12 - Patron Command - ordenes con bitacora y deshacer
+---
+classDiagram
+    direction LR
+
+    class PanelDeControl {
+        -historial: Deque~Orden~
+        -pendientes: Queue~Orden~
+        +ejecutar(orden) void
+        +programar(orden) void
+        +ejecutarPendientes() int
+        +deshacerUltima() boolean
+        +getHistorial() List~String~
+    }
+
+    class Orden {
+        <<interface>>
+        +ejecutar() void
+        +deshacer() void
+        +esReversible() boolean
+        +getDescripcion() String
+    }
+
+    class OrdenRegar {
+        -minutos: int
+        +ejecutar() void
+        +deshacer() void
+        +esReversible() false
+    }
+    class OrdenCambiarUmbralHumedad {
+        -valorNuevo: double
+        -valorAnterior: double
+        +ejecutar() void
+        +deshacer() void
+        +esReversible() true
+    }
+    class OrdenInstalarSensor {
+        -sensor: Sensor
+        -instalado: boolean
+        +ejecutar() void
+        +deshacer() void
+        +esReversible() true
+    }
+
+    class ActuadorRiego {
+        <<interface>>
+        +regar(minutos) void
+    }
+    class UmbralesLote {
+        +setHumedadMin(v) void
+    }
+    class Lote {
+        +agregarSensor(s) Lote
+    }
+
+    PanelDeControl o--> "0..*" Orden : historial y cola
+    Orden <|.. OrdenRegar
+    Orden <|.. OrdenCambiarUmbralHumedad
+    Orden <|.. OrdenInstalarSensor
+    OrdenRegar ..> ActuadorRiego : receptor
+    OrdenCambiarUmbralHumedad ..> UmbralesLote : receptor
+    OrdenInstalarSensor ..> Lote : receptor
+
+    note for PanelDeControl "INVOCADOR: no sabe que hace
+    cada orden ni sobre que objeto actua.
+    historial = PILA (deshacer la ultima)
+    pendientes = COLA (ejecutar en orden)"
+    note for OrdenRegar "NO reversible: el agua ya se aplico.
+    Se declara en vez de fingir un undo."
+    note for OrdenCambiarUmbralHumedad "Guarda valorAnterior al ejecutar:
+    eso es lo minimo que necesita
+    un Command para revertirse."

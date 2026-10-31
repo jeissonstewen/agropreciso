@@ -36,3 +36,6 @@ talleres/
 
 # --- Compilados de las pruebas (semana 7) ---
 semana-*/out/
+
+# --- Material de estudio para la sustentación (no es entregable) ---
+sustentacion/

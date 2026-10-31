@@ -1,0 +1,70 @@
+---
+title: Semana 12 - Patron Chain of Responsibility - atencion de incidencias
+---
+classDiagram
+    direction TB
+
+    class ManejadorIncidencia {
+        <<abstract>>
+        -rol: String
+        -siguiente: ManejadorIncidencia
+        +encadenar(siguiente) ManejadorIncidencia
+        +manejar(incidencia) ResultadoAtencion
+        #puedeAtender(incidencia)* boolean
+        #atender(incidencia)* Orden
+    }
+
+    class AtencionOperario {
+        #puedeAtender() boolean
+        #atender() Orden
+    }
+    class AtencionAgronomo {
+        #puedeAtender() boolean
+        #atender() Orden
+    }
+    class AtencionAdministrador {
+        #puedeAtender() boolean
+        #atender() Orden
+    }
+
+    class Incidencia {
+        -lote: Lote
+        -tipo: TipoIncidencia
+        -lectura: Lectura
+        +getSeveridad() Severidad
+    }
+
+    class TipoIncidencia {
+        <<enumeration>>
+        HUMEDAD_BAJA : LEVE
+        UMBRAL_INADECUADO : MEDIA
+        SENSOR_AVERIADO : CRITICA
+    }
+
+    class ResultadoAtencion {
+        -atendidaPor: String
+        -orden: Orden
+        +fueAtendida() boolean
+    }
+
+    class Orden {
+        <<interface>>
+        +ejecutar() void
+    }
+
+    ManejadorIncidencia <|-- AtencionOperario
+    ManejadorIncidencia <|-- AtencionAgronomo
+    ManejadorIncidencia <|-- AtencionAdministrador
+    ManejadorIncidencia o--> "0..1" ManejadorIncidencia : siguiente
+    ManejadorIncidencia ..> Incidencia : recibe
+    ManejadorIncidencia ..> ResultadoAtencion : devuelve
+    Incidencia o--> TipoIncidencia
+    ResultadoAtencion o--> Orden : la orden a ejecutar
+
+    note for ManejadorIncidencia "La auto-referencia 'siguiente' ES la cadena.
+    manejar() es final: el recorrido no cambia.
+    Si puedeAtender(), atiende y SE DETIENE.
+    Si no, escala. Si nadie puede, lo informa."
+    note for ResultadoAtencion "atender() DEVUELVE una orden,
+    no la ejecuta: de eso se encarga
+    el PanelDeControl (Command)."
