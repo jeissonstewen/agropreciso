@@ -10,7 +10,7 @@
 [![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Tipo](https://img.shields.io/badge/Aplicación-Consola-blue)](#-cómo-ejecutar)
 [![Datos](https://img.shields.io/badge/Datos-Simulados%20(sin%20BD)-lightgrey)](#-alcance-y-restricciones)
-[![Patrones](https://img.shields.io/badge/Patrones-13%20implementados%20%2B%201%20analizado-yellow)](#-hoja-de-ruta-de-patrones)
+[![Patrones](https://img.shields.io/badge/Patrones-15%20implementados%20%2B%201%20analizado-yellow)](#-hoja-de-ruta-de-patrones)
 
 </div>
 
@@ -48,6 +48,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 9 — Decorator y Facade](#semana-9--patrones-decorator-y-facade)
   - [Semana 10 — Proxy y Flyweight](#semana-10--patrones-proxy-y-flyweight)
   - [Semana 12 — Chain of Responsibility y Command](#semana-12--patrones-chain-of-responsibility-y-command)
+  - [Semana 13 — Iterator y Mediator](#semana-13--patrones-iterator-y-mediator)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -130,6 +131,12 @@ agroprecision/
 │   ├── test/
 │   ├── diagramas/
 │   └── evidencias/
+├── semana-13-iterator-mediator/    Patrones Iterator y Mediator
+│   ├── README.md
+│   ├── src/
+│   ├── test/
+│   ├── diagramas/
+│   └── evidencias/
 └── lib/                            junit-platform-console-standalone (JUnit 5)
 ```
 
@@ -147,6 +154,7 @@ agroprecision/
 | [`semana-9-decorator-facade/`](semana-9-decorator-facade/) | Semana 9 — Decorator sobre el servicio de clima y Facade de todo el sistema |
 | [`semana-10-proxy-flyweight/`](semana-10-proxy-flyweight/) | Semana 10 — Proxy de protección por roles y análisis de no implementación del Flyweight |
 | [`semana-12-chain-command/`](semana-12-chain-command/) | Semana 12 — Chain of Responsibility (atención de incidencias) y Command (órdenes con bitácora y deshacer) |
+| [`semana-13-iterator-mediator/`](semana-13-iterator-mediator/) | Semana 13 — Iterator (recorridos del árbol) y Mediator (centro de operaciones) |
 | [`lib/`](lib/) | JUnit 5 (jar autónomo) para las pruebas unitarias |
 
 ## ▶️ Cómo ejecutar
@@ -189,6 +197,10 @@ cd semana-10-proxy-flyweight/src && javac *.java && java MainDemoProxyFlyweight
 cd semana-12-chain-command/src && javac *.java && java MainDemoChainCommand
 ```
 
+```bash
+cd semana-13-iterator-mediator/src && javac *.java && java MainDemoIteratorMediator
+```
+
 Las pruebas unitarias se ejecutan con JUnit 5, sin Maven ni Gradle:
 
 ```bash
@@ -209,6 +221,10 @@ cd semana-10-proxy-flyweight && ./pruebas.sh
 
 ```bash
 cd semana-12-chain-command && ./pruebas.sh
+```
+
+```bash
+cd semana-13-iterator-mediator && ./pruebas.sh
 ```
 
 La Semana 10 incluye además un banco de medición de memoria que sustenta la decisión de no
@@ -243,6 +259,7 @@ incluye además su código y las evidencias de las pruebas ejecutadas.
 | 9 | Decorator · Facade | Clima y fachada del sistema | [Ver](semana-9-decorator-facade/) | [Ver](semana-9-decorator-facade/src/) | [6 capturas](semana-9-decorator-facade/evidencias/) | _(pendiente)_ |
 | 10 | Proxy · Flyweight* | Control de acceso por roles | [Ver](semana-10-proxy-flyweight/) | [Ver](semana-10-proxy-flyweight/src/) | [6 capturas](semana-10-proxy-flyweight/evidencias/) | _(pendiente)_ |
 | 12 | Chain of Responsibility · Command | Incidencias y órdenes | [Ver](semana-12-chain-command/) | [Ver](semana-12-chain-command/src/) | [6 capturas](semana-12-chain-command/evidencias/) | _(pendiente)_ |
+| 13 | Iterator · Mediator | Recorridos y coordinación | [Ver](semana-13-iterator-mediator/) | [Ver](semana-13-iterator-mediator/src/) | [6 capturas](semana-13-iterator-mediator/evidencias/) | _(pendiente)_ |
 
 > \* En la Semana 10 el patrón **Flyweight no se implementa**: se analiza y se documenta, con una
 > medición de memoria, por qué no corresponde hacerlo a la escala actual del prototipo y bajo qué
@@ -409,6 +426,25 @@ el panel la ejecuta**. La cadena nunca ejecuta nada, y hay una prueba que lo ver
 📄 **[Documento completo de la Semana 12](semana-12-chain-command/)** — explicación de ambos
 patrones, diagramas UML, 25 pruebas unitarias y las seis capturas.
 
+### Semana 13 — Patrones Iterator y Mediator
+
+**Iterator** saca el recorrido fuera de la estructura: `IteradorEnProfundidad` guarda lo pendiente
+en una pila y `IteradorPorNiveles` en una cola, y ese único cambio produce dos órdenes distintos
+sobre el mismo árbol sin que `ZonaCultivo` ni `Lote` se enteren. Como la finca implementa
+`Iterable<Lote>`, funciona el `for-each`. El `monitorear()` de la Semana 8 era ya un *iterador
+interno*; este es el externo.
+
+**Mediator** coordina cuatro colegas que no se conocen entre sí: la estación de sensores avisa de
+una anomalía, el centro manda escalarla por la cadena de la Semana 12, luego manda ejecutar la orden
+y por último registrarla. Cuatro colegas, cuatro referencias — sin el patrón serían hasta doce. Una
+prueba verifica por reflexión que ningún colega guarda referencia a otro.
+
+Los dos se encuentran en `inspeccionar()`: la estación **recorre sin saber cómo está organizada la
+finca** y **avisa sin saber quién atenderá**.
+
+📄 **[Documento completo de la Semana 13](semana-13-iterator-mediator/)** — explicación de ambos
+patrones, diagramas UML, 21 pruebas unitarias y las seis capturas.
+
 ---
 
 ## 🗺️ Hoja de ruta de patrones
@@ -432,11 +468,13 @@ del curso se sustentó cada uno.
 | 12 | **Flyweight** | Estructural | Tipos de sensor | 10 | ⚖️ Analizado, no implementado |
 | 13 | **Chain of Responsibility** | Comportamiento | Atención de incidencias | 12 | ✅ Completado |
 | 14 | **Command** | Comportamiento | Órdenes de operación | 12 | ✅ Completado |
-| 15 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
-| 16 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
-| 17 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
-| 18 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
-| 19 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
+| 15 | **Iterator** | Comportamiento | Recorridos del árbol de la finca | 13 | ✅ Completado |
+| 16 | **Mediator** | Comportamiento | Centro de operaciones | 13 | ✅ Completado |
+| 17 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
+| 18 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
+| 19 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
+| 20 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
+| 21 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
 
 ## 🧩 Módulos del sistema
 

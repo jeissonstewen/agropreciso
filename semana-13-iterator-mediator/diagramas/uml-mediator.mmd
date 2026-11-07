@@ -1,0 +1,71 @@
+---
+title: Semana 13 - Patron Mediator - centro de operaciones
+---
+classDiagram
+    direction TB
+
+    class Mediador {
+        <<interface>>
+        +notificar(origen, evento, dato) void
+    }
+
+    class CentroDeOperaciones {
+        -gestor: GestorIncidencias
+        -operaciones: OperacionesCampo
+        -bitacora: Bitacora
+        -avisosRecibidos: int
+        +notificar(origen, evento, dato) void
+        +registrarGestor(g) void
+        +registrarOperaciones(o) void
+        +registrarBitacora(b) void
+    }
+
+    class Colega {
+        <<abstract>>
+        #mediador: Mediador
+        -nombre: String
+        #avisar(evento, dato) void
+    }
+
+    class EstacionSensores {
+        +inspeccionar(finca, recorrido) int
+    }
+    class GestorIncidencias {
+        -cadena: ManejadorIncidencia
+        +escalar(lote) void
+    }
+    class OperacionesCampo {
+        -panel: PanelDeControl
+        +ejecutar(orden) void
+    }
+    class Bitacora {
+        -entradas: List~String~
+        +registrar(texto) void
+    }
+
+    class Evento {
+        <<enumeration>>
+        LECTURA_ANOMALA
+        ORDEN_GENERADA
+        ORDEN_EJECUTADA
+        INCIDENCIA_SIN_ATENDER
+    }
+
+    Mediador <|.. CentroDeOperaciones
+    Colega <|-- EstacionSensores
+    Colega <|-- GestorIncidencias
+    Colega <|-- OperacionesCampo
+    Colega <|-- Bitacora
+    Colega o--> Mediador : conoce
+    CentroDeOperaciones o--> GestorIncidencias
+    CentroDeOperaciones o--> OperacionesCampo
+    CentroDeOperaciones o--> Bitacora
+    CentroDeOperaciones ..> Evento : enruta segun
+
+    note for Colega "Cada colega conoce al mediador
+    y a NINGUN otro colega.
+    Una prueba lo verifica por reflexion."
+    note for CentroDeOperaciones "Solo ENRUTA. Las reglas siguen
+    en la cadena (quien atiende) y en
+    las ordenes (que hace cada accion).
+    Un mediador con reglas = God Object."

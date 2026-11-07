@@ -1,0 +1,68 @@
+---
+title: Semana 13 - Patron Iterator - recorridos del arbol de la finca
+---
+classDiagram
+    direction TB
+
+    class Iterable~Lote~ {
+        <<interface Java>>
+        +iterator() Iterator
+    }
+    class Iterator~Lote~ {
+        <<interface Java>>
+        +hasNext() boolean
+        +next() Lote
+    }
+
+    class ZonaCultivo {
+        -hijos: List~ComponenteFinca~
+        +iterator() Iterator~Lote~
+        +iterador(tipo) Iterator~Lote~
+        +agregar(componente) ZonaCultivo
+    }
+
+    class IteradorEnProfundidad {
+        -pila: Deque~ComponenteFinca~
+        +hasNext() boolean
+        +next() Lote
+    }
+    class IteradorPorNiveles {
+        -cola: Queue~ComponenteFinca~
+        +hasNext() boolean
+        +next() Lote
+    }
+
+    class TipoRecorrido {
+        <<enumeration>>
+        PROFUNDIDAD
+        NIVELES
+    }
+
+    class ComponenteFinca {
+        <<interface>>
+    }
+    class Lote {
+        hoja del Composite
+    }
+
+    Iterable~Lote~ <|.. ZonaCultivo
+    Iterator~Lote~ <|.. IteradorEnProfundidad
+    Iterator~Lote~ <|.. IteradorPorNiveles
+    ZonaCultivo ..> IteradorEnProfundidad : crea
+    ZonaCultivo ..> IteradorPorNiveles : crea
+    ZonaCultivo ..> TipoRecorrido : elige segun
+    ComponenteFinca <|.. ZonaCultivo
+    ComponenteFinca <|.. Lote
+    ZonaCultivo o--> "0..*" ComponenteFinca : hijos
+    IteradorEnProfundidad ..> ComponenteFinca : recorre
+
+    note for ZonaCultivo "AGREGADO: crea el iterador pero
+    NO guarda el estado del recorrido.
+    iterador() es tambien un Factory Method."
+    note for IteradorEnProfundidad "El estado del recorrido vive AQUI.
+    Pila -> baja hasta las hojas.
+    Cola -> nivel por nivel.
+    Un cambio de estructura = otro orden."
+    note for Iterator~Lote~ "El rol Iterator del GoF ya existe
+    en la biblioteca estandar de Java:
+    por eso el for-each funciona."
