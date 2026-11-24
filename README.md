@@ -51,6 +51,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 13 — Iterator y Mediator](#semana-13--patrones-iterator-y-mediator)
   - [Semana 14 — Observer, State y Visitor](#semana-14--patrones-observer-state-y-visitor)
   - [Semana 15 — Strategy y Template Method](#semana-15--patrones-strategy-y-template-method)
+- [Prototipo web](#-prototipo-web)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -151,6 +152,9 @@ agroprecision/
 │   ├── test/
 │   ├── diagramas/
 │   └── evidencias/
+├── prototipo-web/                  Prototipo web de los 21 patrones
+│   ├── index.html
+│   └── README.md
 └── lib/                            junit-platform-console-standalone (JUnit 5)
 ```
 
@@ -171,6 +175,7 @@ agroprecision/
 | [`semana-13-iterator-mediator/`](semana-13-iterator-mediator/) | Semana 13 — Iterator (recorridos del árbol) y Mediator (centro de operaciones) |
 | [`semana-14-observer-state-visitor/`](semana-14-observer-state-visitor/) | Semana 14 — Observer (alertas), State (ciclo del lote) y Visitor (operaciones sobre la finca) |
 | [`semana-15-strategy-template-method/`](semana-15-strategy-template-method/) | Semana 15 — Strategy (política de riego) y Template Method (predicción de cosecha) |
+| [`prototipo-web/`](prototipo-web/) | Prototipo web: interfaz clickeable que muestra el sistema y explica, en cada acción, qué patrón la resuelve y dónde está en el código |
 | [`lib/`](lib/) | JUnit 5 (jar autónomo) para las pruebas unitarias |
 
 ## ▶️ Cómo ejecutar
@@ -223,6 +228,13 @@ cd semana-14-observer-state-visitor/src && javac *.java && java MainDemoObserver
 
 ```bash
 cd semana-15-strategy-template-method/src && javac *.java && java MainDemoStrategyTemplate
+```
+
+El prototipo web no necesita compilarse: se abre con doble clic en
+[`prototipo-web/index.html`](prototipo-web/index.html).
+
+```bash
+open prototipo-web/index.html
 ```
 
 Las pruebas unitarias se ejecutan con JUnit 5, sin Maven ni Gradle:
@@ -525,6 +537,44 @@ Y queda la frontera dicha en código: el **State** decide *si* se riega, la **St
 📄 **[Documento completo de la Semana 15](semana-15-strategy-template-method/)** — explicación de
 ambos patrones, la comparación Strategy vs. Template Method, diagramas UML, 34 pruebas unitarias y
 las siete capturas.
+
+---
+
+## 🖥️ Prototipo web
+
+Además de las demos de consola, el repositorio incluye un **prototipo web clickeable** que
+muestra para qué sirve el sistema y, en cada acción, **qué patrón la resuelve en el código y
+por qué ese patrón y no otro**.
+
+Se abre con doble clic en [`prototipo-web/index.html`](prototipo-web/index.html): es un solo
+archivo autónomo, sin servidor, sin internet y sin librerías externas.
+
+| Pantalla | Patrones que se encienden |
+|---|---|
+| Sesión y acceso | Singleton · Proxy · Facade |
+| La finca | Composite · Iterator · Prototype · Abstract Factory |
+| Sensores | Factory Method · Decorator · *Flyweight (no implementado)* |
+| Riego | State · Strategy |
+| Predicción | Template Method |
+| Operaciones | Chain of Responsibility · Command · Mediator |
+| Reportes y alertas | Builder · Bridge · Observer · Visitor · Adapter |
+
+Los reportes se pueden **descargar** en los tres formatos del Bridge (`.txt`, `.md`, `.csv`), y
+llevan los datos de la finca tal como esté en ese momento: lo que se clone o se equipe en la
+pantalla «La finca» aparece en el archivo.
+
+Cada ficha del panel lateral explica el problema concreto que el patrón resolvió en
+AgroPrecisión, por qué se eligió ese, la frontera con el patrón con el que se confunde, y la
+**ruta y las líneas exactas del archivo `.java`**, con el fragmento real a la vista.
+
+El prototipo **no ejecuta el Java**: reproduce su comportamiento para poder mostrarlo en un
+navegador sin compilar, y la propia página lo advierte en su pie. Lo que sí es comprobable es que los
+números coinciden con los de las demos —5 min y 10.0 L con la estrategia de ahorro, 10 min y
+20.0 L con la intensiva, 10.12 t y 12.88 t netas según el modelo de predicción— y que los
+fragmentos de código son copias literales de los archivos, no transcripciones.
+
+📄 **[Documentación del prototipo](prototipo-web/)** — cómo abrirlo, cómo enviarlo, los atajos
+de teclado y qué recorridos conviene usar en la sustentación.
 
 ---
 

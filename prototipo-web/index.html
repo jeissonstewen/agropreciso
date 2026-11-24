@@ -1,0 +1,2122 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgroPrecisión — Prototipo de patrones de diseño</title>
+<!--
+  AgroPrecisión — Prototipo de patrones de diseño
+  Patrones de Software · Grupo E-195 · Universitaria Tecnológica de Santander
+  Jeisson Stewen Berdugo Cely · Darwin Felipe Gil López
+
+  Archivo AUTÓNOMO: no usa internet, ni servidor, ni librerías externas.
+  Se abre haciendo doble clic. Todas las rutas a código son RELATIVAS
+  (../semana-N-.../src/Clase.java), de modo que los enlaces funcionan
+  mientras esta carpeta viaje junto a las carpetas de las semanas.
+
+  Los fragmentos de Java que aparecen en el panel derecho son COPIAS
+  LITERALES del repositorio, con su archivo y su rango de líneas.
+-->
+<style>
+:root{
+  --verde:#2f6d4f; --verde-claro:#e8f2ec; --verde-borde:#bcd8c8;
+  --tierra:#8a6a3f; --tierra-claro:#f6efe4;
+  --tinta:#1d2420; --tinta-suave:#55605a; --tinta-tenue:#8a948e;
+  --papel:#ffffff; --lienzo:#f4f6f4; --linea:#dfe4e0;
+  --acento:#1f5ea8; --acento-claro:#e8f0fa;
+  --alerta:#b23b2e; --alerta-claro:#fbecea;
+  --aviso:#9a6b12; --aviso-claro:#fdf3e0;
+  --consola-fondo:#20272b; --consola-texto:#e6ecea;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --radio:10px;
+  --sombra:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--lienzo); color:var(--tinta);
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0; line-height:1.25; font-weight:650}
+p{margin:0 0 .7em}
+a{color:var(--acento)}
+code,kbd,pre{font-family:var(--mono)}
+
+/* ---------- Cabecera ---------- */
+.cabecera{
+  background:var(--verde); color:#fff; padding:18px 22px 0;
+  box-shadow:var(--sombra); position:sticky; top:0; z-index:40;
+}
+.cabecera-fila{display:flex; flex-wrap:wrap; align-items:baseline; gap:14px}
+.cabecera h1{font-size:1.22rem; letter-spacing:-.01em}
+.cabecera h1 span{font-weight:400; opacity:.8}
+.cabecera .creditos{font-size:.78rem; opacity:.85; margin-left:auto; text-align:right}
+.cabecera .creditos b{font-weight:600}
+
+/* pestañas de módulos */
+.modulos{display:flex; gap:2px; margin-top:14px; overflow-x:auto; padding-bottom:0}
+.modulos button{
+  appearance:none; border:0; cursor:pointer; white-space:nowrap;
+  background:rgba(255,255,255,.12); color:#fff;
+  font:inherit; font-size:.86rem; font-weight:550;
+  padding:9px 15px; border-radius:8px 8px 0 0; transition:background .12s;
+}
+.modulos button:hover{background:rgba(255,255,255,.22)}
+.modulos button[aria-selected="true"]{background:var(--lienzo); color:var(--verde); font-weight:650}
+.modulos button:focus-visible{outline:2px solid #fff; outline-offset:-3px}
+.modulos button .n{opacity:.6; font-weight:400; margin-right:5px}
+
+/* ---------- Rejilla principal ---------- */
+.lienzo{
+  display:grid; grid-template-columns:minmax(0,1fr) 392px;
+  gap:18px; padding:18px 22px 60px; align-items:start;
+  max-width:1600px; margin:0 auto;
+}
+@media (max-width:1080px){ .lienzo{grid-template-columns:minmax(0,1fr)} }
+
+.tarjeta{
+  background:var(--papel); border:1px solid var(--linea);
+  border-radius:var(--radio); box-shadow:var(--sombra); overflow:hidden;
+}
+.tarjeta-cab{padding:14px 18px; border-bottom:1px solid var(--linea); background:#fbfcfb}
+.tarjeta-cab h2{font-size:1.02rem}
+.tarjeta-cab .sub{font-size:.82rem; color:var(--tinta-suave); margin-top:3px}
+.tarjeta-cuerpo{padding:18px}
+
+/* ---------- Controles ---------- */
+.campo{margin-bottom:15px}
+.campo > label, .campo-rotulo{
+  display:block; font-size:.76rem; font-weight:650; text-transform:uppercase;
+  letter-spacing:.045em; color:var(--tinta-suave); margin-bottom:6px;
+}
+select,input[type=text],input[type=number]{
+  font:inherit; font-size:.9rem; padding:7px 10px; width:100%;
+  border:1px solid var(--linea); border-radius:7px; background:#fff; color:var(--tinta);
+}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--acento); outline-offset:1px}
+input[type=range]{width:100%; accent-color:var(--verde)}
+
+.boton{
+  appearance:none; font:inherit; font-size:.88rem; font-weight:600; cursor:pointer;
+  padding:9px 16px; border-radius:8px; border:1px solid var(--verde);
+  background:var(--verde); color:#fff; transition:filter .12s;
+}
+.boton:hover{filter:brightness(1.08)}
+.boton:disabled{opacity:.45; cursor:not-allowed; filter:none}
+.boton.secundario{background:#fff; color:var(--verde)}
+.boton.neutro{background:#fff; color:var(--tinta-suave); border-color:var(--linea)}
+.boton.peligro{background:#fff; color:var(--alerta); border-color:#e4bdb7}
+.boton-fila{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 2px}
+
+.segmento{display:flex; flex-wrap:wrap; gap:0; border:1px solid var(--linea); border-radius:8px; overflow:hidden}
+.segmento button{
+  appearance:none; font:inherit; font-size:.84rem; cursor:pointer; flex:1 1 auto;
+  padding:8px 12px; border:0; border-right:1px solid var(--linea);
+  background:#fff; color:var(--tinta-suave); white-space:nowrap;
+}
+.segmento button:last-child{border-right:0}
+.segmento button[aria-pressed="true"]{background:var(--verde-claro); color:var(--verde); font-weight:650}
+
+.marca{display:flex; align-items:center; gap:8px; font-size:.88rem; margin-bottom:7px; cursor:pointer}
+.marca input{accent-color:var(--verde); width:16px; height:16px; margin:0; flex:none}
+
+/* ---------- Consola ---------- */
+.consola{
+  background:var(--consola-fondo); color:var(--consola-texto);
+  font-family:var(--mono); font-size:.805rem; line-height:1.55;
+  padding:14px 16px; border-radius:9px; margin-top:16px;
+  white-space:pre-wrap; word-break:break-word; min-height:92px; max-height:460px; overflow:auto;
+}
+.consola:empty::before{content:"La salida del sistema aparecerá aquí."; color:#7d8a8f}
+.consola .eco{color:#7fd1a8}
+.consola .ok{color:#8fd98f}
+.consola .mal{color:#f2928a}
+.consola .atenuado{color:#8d9a9f}
+.consola .realce{color:#f0cb73}
+
+/* ---------- Panel de patrones ---------- */
+.panel{position:sticky; top:calc(var(--alto-cabecera, 108px) + 14px)}
+@media (max-width:1080px){ .panel{position:static} }
+.panel-cab{padding:13px 16px; border-bottom:1px solid var(--linea); background:#fbfcfb}
+.panel-cab h2{font-size:.95rem}
+.panel-cab .sub{font-size:.78rem; color:var(--tinta-suave); margin-top:2px}
+.panel-lista{padding:12px; display:flex; flex-direction:column; gap:10px; max-height:72vh; overflow:auto}
+
+.patron{border:1px solid var(--linea); border-radius:9px; overflow:hidden; background:#fff; transition:border-color .15s, box-shadow .15s}
+.patron.activo{border-color:var(--verde); box-shadow:0 0 0 2px var(--verde-claro)}
+@keyframes destello{
+  0%{box-shadow:0 0 0 2px var(--verde-claro)}
+  40%{box-shadow:0 0 0 6px rgba(47,109,79,.22)}
+  100%{box-shadow:0 0 0 2px var(--verde-claro)}
+}
+.patron.destella{animation:destello .7s ease-out}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .patron.destella{animation:none}
+}
+.patron.inerte{opacity:.52}
+.patron.descartado{border-style:dashed}
+
+.patron-cab{display:flex; align-items:flex-start; gap:9px; padding:10px 12px; cursor:pointer; user-select:none}
+.patron-cab:hover{background:#fafbfa}
+.patron-punto{width:9px; height:9px; border-radius:50%; background:var(--tinta-tenue); margin-top:6px; flex:none}
+.patron.activo .patron-punto{background:var(--verde); box-shadow:0 0 0 3px var(--verde-claro)}
+.patron.descartado .patron-punto{background:transparent; border:2px dashed var(--tinta-tenue)}
+.patron-tit{flex:1; min-width:0}
+.patron-tit .nom{font-weight:650; font-size:.9rem}
+.patron-tit .rol{font-size:.8rem; color:var(--tinta-suave); margin-top:1px}
+.patron-flecha{color:var(--tinta-tenue); font-size:.7rem; margin-top:5px; transition:transform .15s}
+.patron[open] .patron-flecha{transform:rotate(90deg)}
+
+.etq{
+  display:inline-block; font-size:.66rem; font-weight:700; letter-spacing:.05em;
+  text-transform:uppercase; padding:2px 7px; border-radius:20px; vertical-align:2px; margin-left:6px;
+}
+.etq.creacional{background:var(--acento-claro); color:var(--acento)}
+.etq.estructural{background:var(--tierra-claro); color:var(--tierra)}
+.etq.comportamiento{background:var(--verde-claro); color:var(--verde)}
+.etq.no{background:var(--alerta-claro); color:var(--alerta)}
+.etq.semana{background:#eef0ef; color:var(--tinta-suave)}
+
+.patron-cuerpo{padding:0 12px 12px; border-top:1px solid #eef1ef; font-size:.855rem}
+.patron-cuerpo h4{font-size:.73rem; text-transform:uppercase; letter-spacing:.045em; color:var(--tinta-suave); margin:13px 0 5px}
+.patron-cuerpo p{margin:0 0 .55em; color:#36403a}
+.ruta{
+  display:block; font-family:var(--mono); font-size:.745rem; margin:4px 0 0;
+  padding:6px 8px; background:var(--lienzo); border:1px solid var(--linea);
+  border-radius:6px; color:var(--acento); text-decoration:none; word-break:break-all;
+}
+.ruta:hover{background:var(--acento-claro)}
+pre.java{
+  background:var(--consola-fondo); color:var(--consola-texto); margin:6px 0 0;
+  padding:11px 12px; border-radius:7px; overflow-x:auto;
+  font-size:.735rem; line-height:1.5; white-space:pre;
+}
+pre.java .c{color:#8d9a9f; font-style:italic}
+pre.java .k{color:#c493e0}
+pre.java .s{color:#9fd59f}
+pre.java .t{color:#7fc8e8}
+
+.nota-frontera{
+  background:var(--verde-claro); border-left:3px solid var(--verde);
+  padding:8px 11px; border-radius:0 6px 6px 0; margin-top:10px; font-size:.82rem;
+}
+.nota-descarte{
+  background:var(--alerta-claro); border-left:3px solid var(--alerta);
+  padding:8px 11px; border-radius:0 6px 6px 0; margin-top:10px; font-size:.82rem;
+}
+
+/* ---------- Descarga del documento ---------- */
+.descarga{
+  display:flex; flex-wrap:wrap; align-items:center; gap:12px;
+  margin-top:12px; padding:11px 14px; background:var(--verde-claro);
+  border:1px solid var(--verde-borde); border-radius:8px;
+}
+.descarga-nombre{
+  font-family:var(--mono); font-size:.8rem; color:var(--verde);
+  flex:1 1 220px; min-width:0; word-break:break-all;
+}
+.enlace{
+  appearance:none; border:0; background:none; cursor:pointer; padding:9px 4px;
+  font:inherit; font-size:.82rem; color:var(--tinta-suave); text-decoration:underline;
+}
+.enlace:hover{color:var(--verde)}
+.respaldo{margin-top:12px}
+.respaldo p{font-size:.82rem; color:var(--tinta-suave); margin-bottom:6px}
+.respaldo textarea{
+  width:100%; font-family:var(--mono); font-size:.78rem; line-height:1.5;
+  padding:10px 12px; border:1px solid var(--linea); border-radius:8px;
+  background:var(--lienzo); color:var(--tinta); resize:vertical;
+}
+
+/* ---------- Pista de recorrido ---------- */
+.pista{
+  margin:10px 0 0; font-size:.82rem; color:var(--tinta-suave);
+  background:var(--verde-claro); border:1px solid var(--verde-borde);
+  border-radius:7px; padding:7px 11px;
+}
+.pista b{color:var(--verde); font-weight:650}
+.pista:empty{display:none}
+
+/* ---------- Varios ---------- */
+.arbol{font-family:var(--mono); font-size:.82rem; line-height:1.75; background:var(--lienzo);
+       border:1px solid var(--linea); border-radius:8px; padding:12px 14px;
+       white-space:pre-wrap; overflow-x:auto}
+.arbol .zona{color:var(--verde); font-weight:600}
+.arbol .lote{color:var(--tinta)}
+.arbol .dato{color:var(--tinta-suave)}
+
+table.datos{width:100%; border-collapse:collapse; font-size:.85rem; margin-top:4px}
+table.datos th,table.datos td{text-align:left; padding:7px 9px; border-bottom:1px solid var(--linea)}
+table.datos th{font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--tinta-suave); font-weight:650}
+table.datos td.num{text-align:right; font-family:var(--mono); font-size:.82rem}
+table.datos tr.resaltada td{background:var(--verde-claro)}
+
+.chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+.chip{font-size:.76rem; padding:3px 9px; border-radius:20px; background:var(--lienzo); border:1px solid var(--linea); color:var(--tinta-suave)}
+.chip.on{background:var(--verde-claro); border-color:var(--verde-borde); color:var(--verde); font-weight:600}
+
+.estado-lote{display:inline-block; font-size:.76rem; font-weight:650; padding:3px 10px; border-radius:20px}
+.estado-lote.preparacion{background:var(--tierra-claro); color:var(--tierra)}
+.estado-lote.sembrado{background:var(--verde-claro); color:var(--verde)}
+.estado-lote.maduro{background:#fdf3e0; color:var(--aviso)}
+.estado-lote.barbecho{background:#eef0ef; color:var(--tinta-suave)}
+
+.dos-col{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media (max-width:620px){ .dos-col{grid-template-columns:1fr} }
+
+.leyenda{font-size:.8rem; color:var(--tinta-suave); margin-top:10px}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+.pie{
+  text-align:center; padding:26px 20px 40px; color:var(--tinta-suave);
+  font-size:.82rem; border-top:1px solid var(--linea); margin-top:10px; background:var(--papel);
+}
+.pie b{color:var(--tinta); font-weight:600}
+.pie-nota{max-width:620px; margin:12px auto 0; font-size:.76rem; color:var(--tinta-tenue); line-height:1.5}
+</style>
+</head>
+<body>
+
+<header class="cabecera">
+  <div class="cabecera-fila">
+    <h1>AgroPrecisión <span>— prototipo de patrones de diseño</span></h1>
+    <div class="creditos">
+      <b>Patrones de Software</b> · Grupo E-195<br>
+      Jeisson Stewen Berdugo Cely · Darwin Felipe Gil López
+    </div>
+  </div>
+  <nav class="modulos" id="modulos" role="tablist" aria-label="Módulos del sistema"></nav>
+</header>
+
+<main class="lienzo">
+  <!-- ============ columna izquierda: la pantalla del módulo ============ -->
+  <section class="tarjeta" id="escena">
+    <div class="tarjeta-cab">
+      <h2 id="escena-tit">—</h2>
+      <div class="sub" id="escena-sub">—</div>
+      <p class="pista" id="escena-pista"></p>
+    </div>
+    <div class="tarjeta-cuerpo">
+
+      <!-- ---------- 1. SESIÓN ---------- -->
+      <div class="pantalla" id="p-sesion" hidden>
+        <div class="dos-col">
+          <div>
+            <div class="campo">
+              <label for="s-usuario">Usuario del sistema</label>
+              <select id="s-usuario">
+                <option value="operario">operario — rol OPERARIO</option>
+                <option value="agronomo">agronomo — rol AGRONOMO</option>
+                <option value="admin">admin — rol ADMINISTRADOR</option>
+              </select>
+            </div>
+            <div class="boton-fila">
+              <button class="boton" id="s-entrar">Iniciar jornada</button>
+              <button class="boton neutro" id="s-salir">Cerrar jornada</button>
+            </div>
+          </div>
+          <div>
+            <div class="campo-rotulo">Sesión activa</div>
+            <div class="arbol" id="s-estado"></div>
+            <div class="boton-fila">
+              <button class="boton secundario" id="s-instancia">Pedir la instancia otra vez</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="campo" style="margin-top:18px">
+          <div class="campo-rotulo">Acciones protegidas por el proxy de acceso</div>
+          <div class="boton-fila">
+            <button class="boton secundario" data-accion="monitorear">Monitorear la finca</button>
+            <button class="boton secundario" data-accion="reporte">Emitir reporte</button>
+            <button class="boton secundario" data-accion="cerrar">Cerrar el sistema</button>
+          </div>
+          <div class="leyenda">
+            OPERARIO monitorea · AGRONOMO además reporta · ADMINISTRADOR además cierra.
+          </div>
+        </div>
+        <div class="consola" id="s-consola"></div>
+      </div>
+
+      <!-- ---------- 2. LA FINCA ---------- -->
+      <div class="pantalla" id="p-finca" hidden>
+        <div class="campo-rotulo">Estructura de la finca</div>
+        <div class="arbol" id="f-arbol"></div>
+
+        <div class="dos-col" style="margin-top:18px">
+          <div>
+            <div class="campo-rotulo">Recorrer los lotes</div>
+            <div class="boton-fila">
+              <button class="boton" data-recorrido="profundidad">En profundidad (pila)</button>
+              <button class="boton" data-recorrido="niveles">Por niveles (cola)</button>
+            </div>
+            <div class="leyenda">El mismo árbol, dos órdenes distintos.</div>
+          </div>
+          <div>
+            <div class="campo-rotulo">Plantilla de lote</div>
+            <div class="campo">
+              <select id="f-plantilla"></select>
+            </div>
+            <div class="boton-fila">
+              <button class="boton secundario" id="f-clonar">Clonar la plantilla</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="campo" style="margin-top:14px">
+          <div class="campo-rotulo">Equipar una zona nueva</div>
+          <div class="segmento" id="f-fabrica">
+            <button data-fabrica="invernadero" aria-pressed="true">Invernadero</button>
+            <button data-fabrica="campo" aria-pressed="false">Campo abierto</button>
+          </div>
+          <div class="boton-fila">
+            <button class="boton secundario" id="f-equipar">Equipar un lote nuevo</button>
+            <button class="boton neutro" id="f-reiniciar">Reiniciar la finca</button>
+          </div>
+        </div>
+        <div class="consola" id="f-consola"></div>
+      </div>
+
+      <!-- ---------- 3. SENSORES ---------- -->
+      <div class="pantalla" id="p-sensores" hidden>
+        <div class="dos-col">
+          <div>
+            <div class="campo">
+              <label for="x-tipo">Tipo de sensor a fabricar</label>
+              <select id="x-tipo">
+                <option value="HUMEDAD">Humedad (%)</option>
+                <option value="TEMPERATURA">Temperatura (°C)</option>
+                <option value="PH">pH del suelo</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="x-crudo">Valor crudo que entrega el hardware</label>
+              <input type="range" id="x-crudo" min="-10" max="110" value="99" step="1">
+              <div class="leyenda">Lectura cruda: <b id="x-crudo-val">99</b></div>
+            </div>
+          </div>
+          <div>
+            <div class="campo-rotulo">Envolturas (se apilan en orden)</div>
+            <label class="marca"><input type="checkbox" id="x-cal"> Con calibración <span class="chip">+2.5</span></label>
+            <label class="marca"><input type="checkbox" id="x-val"> Con validación <span class="chip">recorta al rango</span></label>
+            <label class="marca"><input type="checkbox" id="x-reg"> Con registro <span class="chip">deja traza</span></label>
+            <div class="leyenda" style="margin-top:10px">El orden importa: calibrar y luego validar no da lo mismo que al revés.</div>
+            <div class="boton-fila">
+              <button class="boton neutro" id="x-invertir">Invertir el orden</button>
+            </div>
+            <div class="chips" id="x-pila"></div>
+          </div>
+        </div>
+        <div class="boton-fila">
+          <button class="boton" id="x-leer">Leer el sensor</button>
+        </div>
+        <div class="consola" id="x-consola"></div>
+      </div>
+
+      <!-- ---------- 4. RIEGO ---------- -->
+      <div class="pantalla" id="p-riego" hidden>
+        <div class="dos-col">
+          <div>
+            <div class="campo">
+              <label for="r-humedad">Humedad medida en el suelo</label>
+              <input type="range" id="r-humedad" min="0" max="100" value="30">
+              <div class="leyenda"><b id="r-humedad-val">30</b> % · umbral del lote <b id="r-umbral-val">45</b> %</div>
+            </div>
+            <div class="campo">
+              <label for="r-umbral">Umbral mínimo de humedad del lote</label>
+              <input type="range" id="r-umbral" min="10" max="90" value="45">
+            </div>
+            <div class="campo">
+              <label for="r-estrategia">Política de riego (Strategy)</label>
+              <select id="r-estrategia">
+                <option value="ahorro">AHORRO DE AGUA — lo mínimo para cruzar el umbral</option>
+                <option value="intensiva">INTENSIVA — margen de seguridad, mínimo 10 min</option>
+                <option value="clima-seco">SEGÚN CLIMA (EST-NORTE, 30.3 °C) — consulta el servicio</option>
+                <option value="clima-lluvia">SEGÚN CLIMA (EST-LLUVIA, 78 %) — consulta el servicio</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="r-actuador">Dispositivo instalado</label>
+              <select id="r-actuador">
+                <option value="goteo">Riego por GOTEO — 2.0 L/min</option>
+                <option value="aspersor">Riego por ASPERSOR — 15.0 L/min</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="campo-rotulo">Ciclo de vida del lote (State)</div>
+            <div class="arbol" id="r-estado"></div>
+            <div class="boton-fila" id="r-transiciones">
+              <button class="boton secundario" data-trans="sembrar">Sembrar</button>
+              <button class="boton secundario" data-trans="madurar">Madurar</button>
+              <button class="boton secundario" data-trans="cosechar">Cosechar</button>
+              <button class="boton secundario" data-trans="prepararSuelo">Preparar suelo</button>
+            </div>
+            <div class="leyenda">Cada estado solo admite su propia transición; el resto las rechaza.</div>
+          </div>
+        </div>
+        <div class="boton-fila">
+          <button class="boton" id="r-monitorear">Monitorear el lote</button>
+          <button class="boton neutro" id="r-comparar">Comparar las cuatro políticas</button>
+        </div>
+        <div class="consola" id="r-consola"></div>
+      </div>
+
+      <!-- ---------- 5. PREDICCIÓN ---------- -->
+      <div class="pantalla" id="p-prediccion" hidden>
+        <div class="dos-col">
+          <div>
+            <div class="campo">
+              <label for="d-historico">Histórico de cosechas, en toneladas</label>
+              <input type="text" id="d-historico" value="8.0, 9.5, 11.0, 12.5">
+              <div class="leyenda">Separadas por coma. La plantilla valida la entrada antes de calcular.</div>
+            </div>
+            <div class="campo">
+              <label for="d-modelo">Modelo de estimación</label>
+              <select id="d-modelo">
+                <option value="promedio">PROMEDIO MÓVIL 3 — promedia las tres últimas</option>
+                <option value="tendencia">TENDENCIA LINEAL — proyecta la recta</option>
+                <option value="estacion">POR ESTACIÓN ×1.10 — único que usa el gancho</option>
+                <option value="optimista">OPTIMISTA — modelo nuevo, solo define el paso 2</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="d-clima">Clima de la temporada</label>
+              <select id="d-clima">
+                <option value="seca">Seca — 31 °C, 30 % de humedad ambiente</option>
+                <option value="neutra">Neutra — 25 °C, 45 %</option>
+                <option value="humeda">Húmeda — 24 °C, 70 %</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="campo-rotulo">Los cuatro pasos de la plantilla</div>
+            <table class="datos" id="d-pasos">
+              <tr><td>1 · Validar la entrada</td><td class="num">fijo · privado</td></tr>
+              <tr><td>2 · Calcular la base</td><td class="num">abstracto</td></tr>
+              <tr><td>3 · Ajustar por clima</td><td class="num">gancho</td></tr>
+              <tr><td>4 · Aplicar la merma 8 %</td><td class="num">fijo · privado</td></tr>
+            </table>
+            <div class="leyenda">Los pasos fijos son privados y <code>estimar()</code> es <code>final</code>: ningún modelo puede alterarlos.</div>
+          </div>
+        </div>
+        <div class="boton-fila">
+          <button class="boton" id="d-estimar">Estimar la cosecha</button>
+          <button class="boton neutro" id="d-todos">Correr los cuatro modelos</button>
+        </div>
+        <div class="consola" id="d-consola"></div>
+      </div>
+
+      <!-- ---------- 6. OPERACIONES ---------- -->
+      <div class="pantalla" id="p-operaciones" hidden>
+        <div class="dos-col">
+          <div>
+            <div class="campo">
+              <label for="o-tipo">Incidencia detectada en campo</label>
+              <select id="o-tipo">
+                <option value="HUMEDAD_BAJA">Humedad bajo el umbral</option>
+                <option value="SENSOR_AVERIADO">Sensor averiado</option>
+                <option value="CADENA_FRIO">Ruptura de cadena de frío</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="o-severidad">Severidad</label>
+              <select id="o-severidad">
+                <option value="LEVE">LEVE — la atiende el operario</option>
+                <option value="MEDIA">MEDIA — la atiende el agrónomo</option>
+                <option value="CRITICA">CRÍTICA — la atiende el administrador</option>
+                <option value="CATASTROFICA">CATASTRÓFICA — nadie en la cadena puede</option>
+              </select>
+            </div>
+            <div class="boton-fila">
+              <button class="boton" id="o-escalar">Escalar por la cadena</button>
+            </div>
+          </div>
+          <div>
+            <div class="campo-rotulo">Panel de control · historial de órdenes</div>
+            <div class="arbol" id="o-historial"></div>
+            <div class="boton-fila">
+              <button class="boton secundario" id="o-ejecutar">Ejecutar la cola</button>
+              <button class="boton peligro" id="o-deshacer">Deshacer la última</button>
+            </div>
+            <div class="leyenda">Las órdenes reversibles se pueden deshacer; regar no.</div>
+          </div>
+        </div>
+        <div class="consola" id="o-consola"></div>
+      </div>
+
+      <!-- ---------- 7. REPORTES Y ALERTAS ---------- -->
+      <div class="pantalla" id="p-reportes" hidden>
+        <div class="dos-col">
+          <div>
+            <div class="campo">
+              <label for="t-reporte">Reporte a construir</label>
+              <select id="t-reporte">
+                <option value="estado">Reporte de ESTADO de la finca</option>
+                <option value="alertas">Reporte de ALERTAS</option>
+              </select>
+            </div>
+            <div class="campo">
+              <div class="campo-rotulo">Formato de salida (Bridge)</div>
+              <div class="segmento" id="t-formato">
+                <button data-formato="consola" aria-pressed="true">Consola</button>
+                <button data-formato="markdown" aria-pressed="false">Markdown</button>
+                <button data-formato="csv" aria-pressed="false">CSV</button>
+              </div>
+            </div>
+            <div class="boton-fila">
+              <button class="boton" id="t-emitir">Emitir el reporte</button>
+              <button class="boton neutro" id="t-clima">Consultar el clima externo</button>
+            </div>
+          </div>
+          <div>
+            <div class="campo-rotulo">Observadores suscritos a las alertas</div>
+            <label class="marca"><input type="checkbox" id="t-panel" checked> Panel de alertas</label>
+            <label class="marca"><input type="checkbox" id="t-historial" checked> Historial</label>
+            <label class="marca"><input type="checkbox" id="t-contador" checked> Contador por severidad</label>
+            <div class="boton-fila">
+              <button class="boton secundario" id="t-alertar">Revisar la finca y avisar</button>
+            </div>
+            <div class="campo-rotulo" style="margin-top:16px">Recorridos con visitante</div>
+            <div class="boton-fila">
+              <button class="boton secundario" data-visita="inventario">Inventario</button>
+              <button class="boton secundario" data-visita="costo">Costo de riego</button>
+              <button class="boton secundario" data-visita="csv">Exportar CSV</button>
+            </div>
+          </div>
+        </div>
+        <div class="consola" id="t-consola"></div>
+        <div class="descarga" id="t-descarga" hidden>
+          <span class="descarga-nombre" id="t-nombre"></span>
+          <div class="boton-fila" style="margin:0">
+            <button class="boton secundario" id="t-descargar">Descargar</button>
+            <button class="boton neutro" id="t-copiar">Copiar</button>
+            <button class="enlace" id="t-ver">¿No se descargó?</button>
+          </div>
+        </div>
+        <div class="respaldo" id="t-respaldo" hidden>
+          <p>El navegador no permitió la descarga. Seleccione el texto y cópielo:</p>
+          <textarea id="t-respaldo-texto" rows="10" readonly></textarea>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ columna derecha: los patrones ============ -->
+  <aside class="panel">
+    <div class="tarjeta">
+      <div class="panel-cab">
+        <h2>Patrones en juego aquí</h2>
+        <div class="sub" id="panel-sub">Se encienden según la última acción</div>
+      </div>
+      <div class="panel-lista" id="panel-lista"></div>
+    </div>
+  </aside>
+</main>
+
+<footer class="pie">
+  <b>Universitaria Tecnológica de Santander</b><br>
+  Patrones de Software · Grupo E-195
+  <p class="pie-nota">Esta página no ejecuta el programa Java: reproduce su comportamiento para
+  poder mostrarlo sin compilar. Los fragmentos de código son copias literales del repositorio.</p>
+</footer>
+
+<script>
+"use strict";
+/* =====================================================================
+   FRAGMENTOS DE CÓDIGO JAVA
+   Copias LITERALES del repositorio, extraídas de los archivos que se
+   indican en cada ficha, con su rango de líneas. No se editan a mano:
+   si el Java cambia, se vuelven a extraer.
+   ===================================================================== */
+const FRAGMENTOS = {
+ "abstract": {
+  "archivo": "semana-6-abstract-factory-prototype/src/FabricaEquipamiento.java",
+  "desde": 13,
+  "hasta": 23,
+  "codigo": "public interface FabricaEquipamiento {\n\n    Sensor crearSensorHumedad(String id);\n\n    Sensor crearSensorTemperatura(String id);\n\n    ActuadorRiego crearActuadorRiego();\n\n    /** Nombre de la familia, para los reportes y las pruebas. */\n    String getZona();\n}"
+ },
+ "adapter": {
+  "archivo": "semana-7-adapter-bridge/src/AdaptadorClimaExterno.java",
+  "desde": 26,
+  "hasta": 31,
+  "codigo": "    @Override\n    public Lectura obtenerTemperatura() {\n        double fahrenheit = leerCampo(\"temp_f\");\n        double celsius    = (fahrenheit - 32) * 5 / 9;      // adaptación de unidades\n        return new Lectura(codigoEstacion, \"TEMPERATURA\", celsius, \"C\");\n    }"
+ },
+ "bridge": {
+  "archivo": "semana-7-adapter-bridge/src/Reporte.java",
+  "desde": 13,
+  "hasta": 32,
+  "codigo": "public abstract class Reporte {\n\n    /** El implementador. Protegido para que las refinaciones lo usen. */\n    protected final SalidaReporte salida;\n\n    protected Reporte(SalidaReporte salida) {\n        this.salida = salida;\n    }\n\n    /** Cada tipo de reporte decide qué escribe; nunca cómo se escribe. */\n    public abstract void generar();\n\n    /** Nombre del tipo de reporte, para las pruebas y la demo. */\n    public abstract String getNombre();\n\n    /** Combinación efectiva: qué reporte sobre qué formato. */\n    public String describir() {\n        return getNombre() + \" en formato \" + salida.getFormato();\n    }\n}"
+ },
+ "builder": {
+  "archivo": "semana-5-builder/src/ReporteBuilder.java",
+  "desde": 15,
+  "hasta": 26,
+  "codigo": "public interface ReporteBuilder {\n\n    ReporteBuilder conTitulo(String titulo);\n    ReporteBuilder conEncabezado(String finca, String responsable);\n    ReporteBuilder conLecturas(List<Lectura> lecturas);\n    ReporteBuilder conAlertas(List<String> alertas);\n    ReporteBuilder conInventario(List<String> items);\n    ReporteBuilder conResumen();\n\n    /** Entrega el producto terminado y deja el builder listo para otro reporte. */\n    ReporteFinca construir();\n}"
+ },
+ "chain": {
+  "archivo": "semana-12-chain-command/src/ManejadorIncidencia.java",
+  "desde": 43,
+  "hasta": 59,
+  "codigo": "    /**\n     * EL MÉTODO DEL PATRÓN. Es final a propósito: el recorrido de la cadena\n     * es siempre el mismo y las subclases no deben alterarlo. Lo único que\n     * cada una aporta es el criterio y la acción.\n     */\n    public final ResultadoAtencion manejar(Incidencia incidencia) {\n        if (puedeAtender(incidencia)) {\n            System.out.println(\"  [\" + rol + \"] me hago cargo: \" + incidencia);\n            return ResultadoAtencion.atendida(rol, atender(incidencia));\n        }\n        System.out.println(\"  [\" + rol + \"] no es de mi competencia, escalo\");\n        if (siguiente != null) {\n            return siguiente.manejar(incidencia);\n        }\n        System.out.println(\"  [CADENA] nadie pudo atender: \" + incidencia);\n        return ResultadoAtencion.sinAtender();\n    }"
+ },
+ "command": {
+  "archivo": "semana-12-chain-command/src/Orden.java",
+  "desde": 17,
+  "hasta": 33,
+  "codigo": "public interface Orden {\n\n    /** Aplica la orden sobre su receptor. */\n    void ejecutar();\n\n    /**\n     * Revierte el efecto de ejecutar().\n     * @throws UnsupportedOperationException si la orden no es reversible\n     */\n    void deshacer();\n\n    /** true si deshacer() puede revertir realmente el efecto. */\n    boolean esReversible();\n\n    /** Texto para el historial y la bitácora. */\n    String getDescripcion();\n}"
+ },
+ "composite": {
+  "archivo": "semana-8-composite-decorator/src/ZonaCultivo.java",
+  "desde": 59,
+  "hasta": 64,
+  "codigo": "    @Override\n    public void monitorear() {\n        System.out.println(\"### Zona \" + nombre\n                + \" (\" + contar(hijos.size(), \"elemento\", \"elementos\") + \")\");\n        for (ComponenteFinca hijo : hijos) hijo.monitorear();\n    }"
+ },
+ "decorator": {
+  "archivo": "semana-8-composite-decorator/src/SensorDecorador.java",
+  "desde": 14,
+  "hasta": 38,
+  "codigo": "public abstract class SensorDecorador implements Sensor {\n\n    /** El objeto envuelto. Puede ser un sensor real u otro decorador. */\n    protected final Sensor sensorEnvuelto;\n\n    protected SensorDecorador(Sensor sensorEnvuelto) {\n        if (sensorEnvuelto == null) {\n            throw new IllegalArgumentException(\"Un decorador necesita un sensor que envolver\");\n        }\n        this.sensorEnvuelto = sensorEnvuelto;\n    }\n\n    @Override\n    public Lectura leer() {\n        return sensorEnvuelto.leer();\n    }\n\n    @Override\n    public String getTipo() {\n        return sensorEnvuelto.getTipo();\n    }\n\n    /** Cadena de decoradores aplicados, para la demo y las pruebas. */\n    public abstract String getDescripcion();\n}"
+ },
+ "facade": {
+  "archivo": "semana-9-decorator-facade/src/FachadaAgroPrecision.java",
+  "desde": 84,
+  "hasta": 89,
+  "codigo": "    public void consultarClima() {\n        exigirSesion();\n        System.out.println(\"  Origen: \" + clima.getOrigen());\n        System.out.println(\"  \" + clima.obtenerTemperatura());\n        System.out.println(\"  \" + clima.obtenerHumedad());\n    }"
+ },
+ "factory": {
+  "archivo": "semana-4-factory-method/src/CreadorSensor.java",
+  "desde": 11,
+  "hasta": 30,
+  "codigo": "public abstract class CreadorSensor {\n\n    /**\n     * EL FACTORY METHOD.\n     * Es abstracto: cada subclase decide qué producto concreto devolver.\n     */\n    protected abstract Sensor crearSensor(String id);\n\n    /**\n     * Operación del sistema que USA el producto sin conocer su clase concreta.\n     * Nótese que aquí no hay ningún 'new SensorHumedad()' ni ningún if/else\n     * por tipo: solo se pide el sensor y se trabaja con la interfaz Sensor.\n     */\n    public Lectura tomarLectura(String id) {\n        Sensor sensor = crearSensor(id);          // <- aquí actúa el Factory Method\n        Lectura lectura = sensor.leer();\n        System.out.println(\"[SENSOR] \" + lectura);\n        return lectura;\n    }\n}"
+ },
+ "flyweight": {
+  "archivo": "semana-10-proxy-flyweight/medicion/BancoMemoriaFlyweight.java",
+  "desde": 94,
+  "hasta": 109,
+  "codigo": "    /**\n     * CON flyweight: un único objeto con el estado intrínseco, compartido\n     * por todos los sensores. Cada sensor solo guarda su id (su estado\n     * extrínseco) y una referencia.\n     */\n    private static long medirConFlyweight(int n) {\n        long base = memoriaUsada();\n        TipoSensorCompartido humedad = new TipoSensorCompartido(\"HUMEDAD\", \"%\", 10.0, 90.0);\n        SensorConFlyweight[] sensores = new SensorConFlyweight[n];\n        for (int i = 0; i < n; i++) {\n            sensores[i] = new SensorConFlyweight(\"S-\" + i, humedad);\n        }\n        long usada = memoriaUsada() - base;\n        retenido = sensores;\n        return usada;\n    }"
+ },
+ "iterator": {
+  "archivo": "semana-13-iterator-mediator/src/IteradorEnProfundidad.java",
+  "desde": 35,
+  "hasta": 46,
+  "codigo": "    @Override\n    public boolean hasNext() {\n        while (!pila.isEmpty() && !(pila.peek() instanceof Lote)) {\n            ComponenteFinca zona = pila.pop();\n            List<ComponenteFinca> hijos = ((ZonaCultivo) zona).getHijos();\n            // Se apilan al revés para que salgan en el orden en que se agregaron.\n            for (int i = hijos.size() - 1; i >= 0; i--) {\n                pila.push(hijos.get(i));\n            }\n        }\n        return !pila.isEmpty();\n    }"
+ },
+ "mediator": {
+  "archivo": "semana-13-iterator-mediator/src/CentroDeOperaciones.java",
+  "desde": 48,
+  "hasta": 75,
+  "codigo": "    @Override\n    public void notificar(Colega origen, Evento evento, Object dato) {\n        avisosRecibidos++;\n        System.out.println(\"  [CENTRO] \" + origen.getNombre() + \" informa: \" + evento);\n\n        switch (evento) {\n            case LECTURA_ANOMALA:\n                exigir(gestor, \"un gestor de incidencias\");\n                gestor.escalar((Lote) dato);\n                break;\n\n            case ORDEN_GENERADA:\n                exigir(operaciones, \"un equipo de operaciones\");\n                operaciones.ejecutar((Orden) dato);\n                break;\n\n            case ORDEN_EJECUTADA:\n                registrar(\"Ejecutada: \" + ((Orden) dato).getDescripcion());\n                break;\n\n            case INCIDENCIA_SIN_ATENDER:\n                registrar(\"Sin atender: \" + ((Lote) dato).getNombre());\n                break;\n\n            default:\n                throw new IllegalArgumentException(\"Evento no contemplado: \" + evento);\n        }\n    }"
+ },
+ "observer": {
+  "archivo": "semana-14-observer-state-visitor/src/MonitorDeAlertas.java",
+  "desde": 87,
+  "hasta": 97,
+  "codigo": "    /**\n     * El corazón del patrón: avisar a todos, sin saber quiénes son.\n     * Se recorre una copia para que un observador pueda desuscribirse\n     * mientras recibe el aviso sin romper la iteración.\n     */\n    private void publicar(Alerta alerta) {\n        alertasPublicadas++;\n        for (ObservadorAlerta observador : new ArrayList<>(observadores)) {\n            observador.alPublicarse(alerta);\n        }\n    }"
+ },
+ "prototype": {
+  "archivo": "semana-6-abstract-factory-prototype/src/Lote.java",
+  "desde": 51,
+  "hasta": 62,
+  "codigo": "    @Override\n    public Lote clone() {\n        try {\n            Lote copia = (Lote) super.clone();          // 1. copia superficial\n            copia.umbrales = this.umbrales.copiar();    // 2. objeto mutable: copia aparte\n            copia.sensores = new ArrayList<>(this.sensores); // 3. lista nueva (misma instancia de cada sensor)\n            return copia;\n        } catch (CloneNotSupportedException e) {\n            // Imposible: la clase implementa Cloneable.\n            throw new AssertionError(\"Lote debe ser clonable\", e);\n        }\n    }"
+ },
+ "proxy": {
+  "archivo": "semana-10-proxy-flyweight/src/ProxyAccesoSistema.java",
+  "desde": 50,
+  "hasta": 54,
+  "codigo": "    @Override\n    public void monitorearFinca() {\n        exigir(ROL_MONITOREO, \"monitorear la finca\");\n        sistemaReal.monitorearFinca();\n    }"
+ },
+ "singleton": {
+  "archivo": "semana-3-singleton/src/SesionUsuario.java",
+  "desde": 35,
+  "hasta": 40,
+  "codigo": "    public static synchronized SesionUsuario getInstancia() {\n        if (instancia == null) {\n            instancia = new SesionUsuario();\n        }\n        return instancia;\n    }"
+ },
+ "state": {
+  "archivo": "semana-14-observer-state-visitor/src/EstadoBase.java",
+  "desde": 8,
+  "hasta": 23,
+  "codigo": "public abstract class EstadoBase implements EstadoLote {\n\n    @Override public void sembrar(Lote lote)       { rechazar(\"sembrar\", lote); }\n    @Override public void madurar(Lote lote)       { rechazar(\"madurar\", lote); }\n    @Override public void cosechar(Lote lote)      { rechazar(\"cosechar\", lote); }\n    @Override public void prepararSuelo(Lote lote) { rechazar(\"preparar el suelo de\", lote); }\n\n    /** Mensaje único para toda transición inválida. */\n    private void rechazar(String operacion, Lote lote) {\n        throw new IllegalStateException(String.format(\n                \"No se puede %s %s: esta %s\", operacion, lote.getNombre(), getNombre()));\n    }\n\n    @Override\n    public String toString() { return getNombre(); }\n}"
+ },
+ "strategy": {
+  "archivo": "semana-15-strategy-template-method/src/EstrategiaRiego.java",
+  "desde": 27,
+  "hasta": 40,
+  "codigo": "public interface EstrategiaRiego {\n\n    /**\n     * Minutos de riego a aplicar.\n     *\n     * @param humedad  la última lectura de humedad del lote\n     * @param umbrales los umbrales propios del lote\n     * @return minutos de riego; 0 significa \"no regar ahora\"\n     */\n    int calcularMinutos(Lectura humedad, UmbralesLote umbrales);\n\n    /** Nombre de la política, para la bitácora y los reportes. */\n    String getNombre();\n}"
+ },
+ "template": {
+  "archivo": "semana-15-strategy-template-method/src/ModeloPrediccion.java",
+  "desde": 44,
+  "hasta": 80,
+  "codigo": "    /**\n     * MÉTODO PLANTILLA. Es `final` a propósito: define el esqueleto del\n     * algoritmo y el orden de los pasos, y eso no se negocia.\n     *\n     * @param lote     lote sobre el que se estima\n     * @param historico producción de las cosechas anteriores, en toneladas\n     */\n    public final Prediccion estimar(Lote lote, double[] historico) {\n        List<String> traza = new ArrayList<>();\n\n        // --- Paso 1: fijo, igual para todos los modelos ---\n        validarEntrada(lote, historico);\n        traza.add(String.format(\"1. Validacion: %d cosechas historicas de %s\",\n                historico.length, lote.getNombre()));\n\n        // --- Paso 2: variable, cada modelo tiene su fórmula (abstracto) ---\n        double base = calcularBase(historico);\n        traza.add(String.format(\"2. Base (%s): %.2f t\", getNombre(), base));\n\n        // --- Paso 3: gancho (hook). Por defecto no hace nada ---\n        double ajustada = ajustarPorClima(base);\n        if (Math.abs(ajustada - base) < 0.0001) {\n            // Puede ser que el modelo no sobreescriba el gancho, o que lo\n            // sobreescriba y el clima resulte neutro: en los dos casos el\n            // esqueleto siguió igual.\n            traza.add(String.format(\"3. Ajuste por clima: sin cambio (%.2f t)\", base));\n        } else {\n            traza.add(String.format(\"3. Ajuste por clima: %.2f t -> %.2f t\", base, ajustada));\n        }\n\n        // --- Paso 4: fijo, política de la finca ---\n        double neta = aplicarMerma(ajustada);\n        traza.add(String.format(\"4. Merma poscosecha %.0f %%: %.2f t -> %.2f t\",\n                MERMA_POSCOSECHA * 100, ajustada, neta));\n\n        return new Prediccion(getNombre(), lote.getNombre(), base, ajustada, neta, traza);\n    }"
+ },
+ "visitor": {
+  "archivo": "semana-14-observer-state-visitor/src/VisitanteFinca.java",
+  "desde": 23,
+  "hasta": 31,
+  "codigo": "public interface VisitanteFinca {\n\n    void visitarZona(ZonaCultivo zona);\n\n    void visitarLote(Lote lote);\n\n    /** Resultado de la visita, ya formateado. */\n    String getResultado();\n}"
+ }
+};
+</script>
+
+<script>
+"use strict";
+/* =====================================================================
+   1. CATÁLOGO DE PATRONES
+   Cada ficha explica el problema concreto que ese patrón resolvió en
+   AgroPrecisión y por qué se eligió ese y no otro. El fragmento de
+   código es copia literal del repositorio (ver FRAGMENTOS, más abajo).
+   ===================================================================== */
+const PATRONES = {
+
+  singleton: {
+    nombre:"Singleton", cat:"creacional", semana:3,
+    rol:"Una sola sesión y una sola configuración en todo el sistema",
+    problema:"La sesión del usuario y los umbrales globales los consultan casi todos los módulos. Si cada uno creara su propio objeto, el riego podría estar leyendo un umbral que el agrónomo ya cambió, y el proxy podría ver una sesión distinta de la que inició el operario.",
+    porque:"Hace falta un punto de acceso único y una sola instancia garantizada. El constructor es privado, de modo que nadie puede crear una segunda ni por error. <code>SesionUsuario</code> es perezoso y <code>synchronized</code> porque la sesión se crea cuando alguien entra; <code>ConfiguracionSistema</code> es temprano con <code>static final</code> porque los umbrales existen desde que arranca el programa.",
+    frontera:"No se usó para el resto de objetos del sistema: un lote o un sensor sí pueden —y deben— existir muchas veces."
+  },
+
+  proxy: {
+    nombre:"Proxy", cat:"estructural", semana:10,
+    rol:"Comprueba el rol antes de dejar pasar cada operación",
+    problema:"Cualquiera que tuviera la fachada podía cerrar el sistema o emitir reportes. El control de acceso no podía meterse dentro de cada operación: ensuciaría la lógica de negocio con comprobaciones de rol repetidas.",
+    porque:"El proxy implementa la <b>misma interfaz</b> que el sistema real, así que el cliente no nota la diferencia. Antes de delegar, pregunta por el rol de la sesión; si no alcanza, rechaza y lleva la cuenta de los intentos. El sistema real nunca se entera de que existe un control de acceso.",
+    frontera:"<code>getFinca()</code> se dejó FUERA del contrato a propósito: la fachada lo exponía para no encerrar el subsistema, pero habría sido un agujero en el control de acceso."
+  },
+
+  facade: {
+    nombre:"Facade", cat:"estructural", semana:9,
+    rol:"Una sola puerta de entrada a todo el subsistema",
+    problema:"Para una jornada normal había que conocer el Singleton de sesión, armar el árbol Composite, envolver el servicio de clima con el Adapter y sus decoradores, y elegir el Bridge de salida. Seis objetos y un orden concreto para hacer una tarea rutinaria.",
+    porque:"La fachada ofrece seis operaciones de negocio —iniciar jornada, monitorear, consultar clima, reportar, cerrar— y por dentro orquesta a todos. Quien la usa no necesita saber qué hay detrás.",
+    frontera:"La fachada no encierra al subsistema: <code>getFinca()</code> deja entrar a quien necesite el detalle. Un Facade que prohíbe el acceso directo sería un Proxy, que es justo lo que se hizo en la Semana 10."
+  },
+
+  composite: {
+    nombre:"Composite", cat:"estructural", semana:8,
+    rol:"Zonas y lotes se tratan igual al recorrer la finca",
+    problema:"Una finca tiene zonas, que contienen subzonas, que contienen lotes. Sin un patrón, monitorear la finca exigía recorrer con condicionales anidados preguntando a cada paso si lo que hay es una zona o un lote.",
+    porque:"<code>ZonaCultivo</code> (compuesto) y <code>Lote</code> (hoja) implementan la misma interfaz <code>ComponenteFinca</code>. Pedir <code>monitorear()</code> a la finca entera o a un solo lote es la misma llamada, y la recursión queda dentro del compuesto.",
+    frontera:"Se eligió la variante de SEGURIDAD: agregar y quitar hijos solo existen en el compuesto, no en la interfaz común, para que nadie intente añadirle un hijo a un lote."
+  },
+
+  iterator: {
+    nombre:"Iterator", cat:"comportamiento", semana:13,
+    rol:"Recorre los lotes del árbol sin exponer cómo está armado",
+    problema:"Se necesitaban dos recorridos distintos del mismo árbol —en profundidad y por niveles— y el estado del recorrido no podía vivir en la zona: dos recorridos simultáneos se pisarían.",
+    porque:"El estado vive en el iterador, no en el agregado, así que puede haber varios a la vez. <code>IteradorEnProfundidad</code> usa una PILA y <code>IteradorPorNiveles</code> una COLA: misma estructura, distinto orden. Se reutilizan <code>Iterator</code> e <code>Iterable</code> del JDK porque el rol ya existe en la biblioteca.",
+    frontera:"El <code>monitorear()</code> de la Semana 8 es un iterador INTERNO: recorre por su cuenta. Este es el EXTERNO: quien llama decide cuándo pedir el siguiente."
+  },
+
+  prototype: {
+    nombre:"Prototype", cat:"creacional", semana:6,
+    rol:"Crea lotes nuevos copiando una plantilla ya configurada",
+    problema:"Configurar un lote desde cero —umbrales, sensores, actuador— es repetitivo y propenso a errores cuando veinte lotes comparten la misma configuración salvo el nombre.",
+    porque:"Se clona una plantilla ya válida y se le cambia lo poco que difiere. La copia es PROFUNDA en lo que es mutable: <code>UmbralesLote</code> se copia aparte y la lista de sensores es una lista nueva. Si fuera superficial, cambiar el umbral de una copia cambiaría el de la plantilla.",
+    frontera:"Los sensores en sí se comparten entre copias a propósito: son el dispositivo físico, y un sensor no se duplica al duplicar la ficha del lote."
+  },
+
+  abstract: {
+    nombre:"Abstract Factory", cat:"creacional", semana:6,
+    rol:"Equipamiento coherente según la zona: invernadero o campo abierto",
+    problema:"Un lote bajo invernadero necesita sensores de precisión y riego por goteo; uno a campo abierto, sensores robustos y aspersor. Mezclarlos —sensor de invernadero con aspersor— es una combinación que no debería poder construirse.",
+    porque:"Cada fábrica concreta produce la FAMILIA completa y coherente. El cliente pide la fábrica de su zona y recibe un conjunto compatible, sin poder mezclar piezas de familias distintas.",
+    frontera:"Factory Method crea UN producto variable; Abstract Factory crea una familia de productos que deben encajar entre sí."
+  },
+
+  factory: {
+    nombre:"Factory Method", cat:"creacional", semana:4,
+    rol:"Cada creador decide qué sensor concreto fabricar",
+    problema:"El código que toma lecturas tenía que saber de qué tipo era cada sensor para construirlo. Añadir un tipo nuevo obligaba a tocar ese código en todos los sitios donde se creaban sensores.",
+    porque:"La superclase define el método que usa el sensor (<code>tomarLectura</code>) y deja la creación en un método abstracto que cada subclase resuelve. Un tipo de sensor nuevo es una subclase nueva: no se modifica nada de lo existente.",
+    frontera:"Se encarga del CÓMO SE CREA. Qué hace la lectura después es cosa del Decorator."
+  },
+
+  decorator: {
+    nombre:"Decorator", cat:"estructural", semana:8,
+    rol:"Añade calibración, validación y registro sin tocar el sensor",
+    problema:"Algunos sensores necesitan calibración, otros validación de rango, otros dejar traza, y algunos las tres. Con herencia harían falta clases para cada combinación posible.",
+    porque:"Cada decorador envuelve un sensor y añade una responsabilidad; implementa la misma interfaz, así que se pueden apilar. El ORDEN cambia el resultado: calibrar y luego validar no es lo mismo que validar y luego calibrar, y eso se ve en la pantalla.",
+    frontera:"En la Semana 9 el mismo patrón se aplicó a otro eje —<code>ProveedorClima</code>, con caché y reintento— y allí ningún decorador altera el valor: uno cambia cuántas veces se pide y el otro qué pasa cuando falla."
+  },
+
+  flyweight: {
+    nombre:"Flyweight", cat:"no", semana:10, descartado:true,
+    rol:"Analizado y NO implementado · decisión documentada",
+    problema:"Flyweight comparte el estado común entre muchos objetos iguales para ahorrar memoria. Aquí encajaría en los tipos de sensor: nombre, unidad y rango se repiten en cada instancia.",
+    porque:"No se implementó, y esa es la entrega. El banco de medición del repositorio da ~64 bytes de estado compartible por sensor: harían falta unos <b>16 000 sensores</b> para ahorrar 1 MB. El prototipo tiene <b>5</b>. El patrón añadiría una fábrica de tipos y una separación entre estado intrínseco y extrínseco a cambio de un ahorro inmedible.",
+    descarte:"Correspondería a partir de: (1) decenas de miles de sensores vivos a la vez, (2) un perfilado que señale ese estado como peso real, o (3) lecturas históricas en memoria en vez de instantáneas."
+  },
+
+  adapter: {
+    nombre:"Adapter", cat:"estructural", semana:7,
+    rol:"Traduce el servicio de clima externo al lenguaje del sistema",
+    problema:"El servicio meteorológico entrega grados Fahrenheit y la humedad como fracción (0.42). El sistema trabaja en Celsius y en porcentaje, y su interfaz es <code>ProveedorClima</code>. Son incompatibles y el servicio externo no se puede modificar.",
+    porque:"El adaptador implementa la interfaz que el sistema espera y por dentro compone al servicio externo, traduciendo unidades en cada llamada. Si mañana cambia el proveedor, solo cambia el adaptador.",
+    frontera:"Se usó composición y no herencia: el servicio externo es de otro, y heredar de una clase ajena ata el sistema a su implementación."
+  },
+
+  bridge: {
+    nombre:"Bridge", cat:"estructural", semana:7,
+    rol:"Separa qué dice el reporte de cómo se escribe",
+    problema:"Dos tipos de reporte (estado y alertas) por tres formatos de salida (consola, Markdown, CSV) son seis clases por herencia, y cada formato nuevo multiplica.",
+    porque:"Dos jerarquías independientes unidas por composición: el reporte sabe QUÉ informar, la salida sabe CÓMO escribirlo. Un formato nuevo es una clase, no seis; un reporte nuevo también.",
+    frontera:"El Bridge se decide al construir y separa dos ejes de variación. El Strategy intercambia un algoritmo y puede cambiarse en ejecución."
+  },
+
+  builder: {
+    nombre:"Builder", cat:"creacional", semana:5,
+    rol:"Arma el reporte por partes, en el orden correcto",
+    problema:"Un reporte tiene encabezado, cuerpo con lecturas, alertas y pie, y no todas las secciones aparecen siempre. Un constructor con ocho parámetros opcionales es ilegible y frágil.",
+    porque:"El builder añade sección por sección y devuelve el producto terminado al final. El <code>DirectorReportes</code> guarda las recetas de armado más frecuentes, de modo que quien pide un reporte estándar no repite los pasos.",
+    frontera:"Builder construye UN objeto complejo paso a paso; Abstract Factory produce familias de objetos ya hechos."
+  },
+
+  chain: {
+    nombre:"Chain of Responsibility", cat:"comportamiento", semana:12,
+    rol:"La incidencia sube de nivel hasta que alguien la atiende",
+    problema:"Según su severidad, una incidencia la resuelve el operario, el agrónomo o el administrador. Con condicionales, quien detecta la incidencia tendría que conocer a todos los roles y su orden de escalamiento.",
+    porque:"Cada manejador decide si es de su competencia y, si no, escala al siguiente. Quien lanza la incidencia solo conoce el primer eslabón. El método <code>manejar()</code> es <code>final</code>: el recorrido es siempre el mismo y lo único que cada eslabón aporta es su criterio y su acción.",
+    frontera:"<code>atender()</code> DEVUELVE una orden, no la ejecuta: ejecutar es del Command. Y el caso 'nadie pudo' se resuelve con un resultado explícito, no con una excepción."
+  },
+
+  command: {
+    nombre:"Command", cat:"comportamiento", semana:12,
+    rol:"Convierte cada acción de campo en un objeto con deshacer",
+    problema:"Las acciones sobre la finca había que poder encolarlas, registrarlas en bitácora y, en algunos casos, revertirlas. Llamando a métodos directamente no hay nada que guardar ni que deshacer.",
+    porque:"Cada acción es un objeto con <code>ejecutar()</code> y <code>deshacer()</code>. El <code>PanelDeControl</code> mantiene un historial LIFO y una cola FIFO sin saber qué hace cada orden. Cambiar el umbral e instalar un sensor son reversibles; regar no lo es, y la orden lo declara.",
+    frontera:"El Command guarda y ejecuta la acción; quién decidió que hacía falta es cosa de la cadena."
+  },
+
+  mediator: {
+    nombre:"Mediator", cat:"comportamiento", semana:13,
+    rol:"El centro de operaciones coordina a los colegas, que no se conocen",
+    problema:"La estación de sensores, el gestor de incidencias, las operaciones de campo y la bitácora tenían que reaccionar unos a otros. Conectados entre sí, cada uno acaba con referencias a los otros tres: cualquier cambio toca a todos.",
+    porque:"Todos hablan con el mediador y ninguno con los demás. Una prueba unitaria lo verifica por reflexión: ningún colega tiene un campo de otro colega. Los eventos que se envían son HECHOS, no órdenes, para que el centro decida qué hacer.",
+    frontera:"El centro solo enruta, no calcula: si empezara a resolver, se convertiría en un objeto que lo sabe todo, que es justo lo que este patrón evita."
+  },
+
+  observer: {
+    nombre:"Observer", cat:"comportamiento", semana:14,
+    rol:"Quien quiera enterarse de una alerta se suscribe",
+    problema:"Ante una alerta hay que actualizar el panel, guardar el historial y llevar el contador por severidad. Si quien detecta la alerta llama a los tres, añadir un cuarto interesado obliga a modificarlo.",
+    porque:"El monitor mantiene una lista de interesados y avisa a todos sin saber quiénes son. Los observadores se suscriben solos. Se recorre una COPIA de la lista para que un observador pueda darse de baja mientras recibe el aviso sin romper el recorrido.",
+    frontera:"Observer es QUIÉN SE ENTERA de un hecho; Mediator es CÓMO SE COORDINAN colegas que sí conocen al mediador."
+  },
+
+  state: {
+    nombre:"State", cat:"comportamiento", semana:14,
+    rol:"El lote cambia de comportamiento según su etapa",
+    problema:"Un lote en barbecho no se riega aunque esté seco, y uno en preparación no se cosecha. Con banderas y condicionales, cada método del lote acababa empezando por un bloque de comprobaciones de etapa.",
+    porque:"Cada estado es una clase. <code>EstadoBase</code> RECHAZA todo por defecto y cada estado concreto sobreescribe solo la transición que sí admite: el ciclo queda explícito y no hay transiciones inválidas posibles. <code>cambiarEstado()</code> es de paquete, así que nadie fija el estado a mano desde fuera.",
+    frontera:"El State decide SI se riega. Cuánta agua es de la Strategy."
+  },
+
+  visitor: {
+    nombre:"Visitor", cat:"comportamiento", semana:14,
+    rol:"Operaciones nuevas sobre la finca sin tocar zonas ni lotes",
+    problema:"Inventariar, calcular el costo de riego y exportar a CSV son tres recorridos del mismo árbol. Metiéndolos en las clases de la finca, cada operación nueva obliga a modificar <code>ZonaCultivo</code> y <code>Lote</code>.",
+    porque:"Cada operación es un visitante con <code>visitarZona</code> y <code>visitarLote</code>. El RECORRIDO vive en <code>ZonaCultivo.aceptar()</code>, no en el visitante, así que un visitante nuevo no tiene que saber cómo está armado el árbol.",
+    frontera:"Exige una intrusión mínima: las clases de la finca ganan <code>aceptar()</code>. Es el precio del patrón y conviene decirlo: compensa cuando las operaciones cambian más que la estructura."
+  },
+
+  strategy: {
+    nombre:"Strategy", cat:"comportamiento", semana:15,
+    rol:"Decide CUÁNTA agua aplicar; se puede cambiar en ejecución",
+    problema:"Desde la Semana 6 el lote tenía <code>actuador.regar(10)</code> quemado en el código: diez minutos fijos para un cafetal bajo invernadero y para un maizal a pleno sol. Cambiar la política de riego obligaba a editar la clase <code>Lote</code>.",
+    porque:"La política vive en una interfaz con un solo método. El lote es el contexto y puede cambiarla entre dos monitoreos. Una estrategia nueva no obliga a tocar el lote: una prueba unitaria lo demuestra definiendo una estrategia que el código de producción no conoce.",
+    frontera:"El State decide SI se riega, la Strategy CUÁNTA agua, y el actuador solo la APLICA. Tres patrones, tres preguntas distintas sobre la misma acción."
+  },
+
+  template: {
+    nombre:"Template Method", cat:"comportamiento", semana:15,
+    rol:"Fija el orden de la predicción y deja variar un solo paso",
+    problema:"Los modelos de predicción difieren en la fórmula, pero todos deben validar la entrada igual y descontar la misma merma de poscosecha. Si cada modelo escribe el procedimiento completo, tarde o temprano uno se salta la validación o aplica otra merma.",
+    porque:"<code>estimar()</code> es <code>final</code> y define los cuatro pasos. Validar y aplicar la merma son <code>private</code>: política de la finca, no del modelo. <code>calcularBase()</code> es abstracto —lo único obligatorio— y <code>ajustarPorClima()</code> es un gancho con comportamiento por defecto. Un modelo nuevo son cinco líneas.",
+    frontera:"Strategy cambia el algoritmo completo por composición y en ejecución. Template Method fija el orden por herencia y solo deja variar los huecos."
+  }
+};
+</script>
+
+<script>
+"use strict";
+/* =====================================================================
+   2. MÓDULOS, PANEL Y UTILIDADES
+   ===================================================================== */
+const MODULOS = [
+  {id:"sesion",      tit:"Sesión y acceso",     sub:"Quién entra al sistema y qué puede hacer",
+   pista:"Entre como <b>operario</b> y pulse «Cerrar el sistema»: el proxy lo rechaza y el sistema real ni se entera del intento.",
+   patrones:["singleton","proxy","facade"]},
+  {id:"finca",       tit:"La finca",            sub:"Zonas, lotes y recorridos del árbol",
+   pista:"Recorra <b>en profundidad</b> y luego <b>por niveles</b>: el mismo árbol, dos órdenes distintos.",
+   patrones:["composite","iterator","prototype","abstract"]},
+  {id:"sensores",    tit:"Sensores",            sub:"Drones e IoT: fabricar una lectura y enriquecerla",
+   pista:"Marque <b>calibración y validación</b> y lea; luego invierta el orden y vuelva a leer. Con la lectura cruda cerca del tope, recortar antes o después de calibrar da resultados distintos.",
+   patrones:["factory","decorator","flyweight"]},
+  {id:"riego",       tit:"Riego",               sub:"Si corresponde regar, cuánta agua y quién la aplica",
+   pista:"Deje puesta la política <b>intensiva</b> y lleve el lote a <b>barbecho</b>: el estado manda sobre la estrategia.",
+   patrones:["state","strategy"]},
+  {id:"prediccion",  tit:"Predicción",          sub:"Estimar la cosecha con el mismo procedimiento",
+   pista:"Corra <b>los cuatro modelos</b>: los cuatro pasos salen en el mismo orden y solo cambian los números del paso 2.",
+   patrones:["template"]},
+  {id:"operaciones", tit:"Operaciones",         sub:"Incidencias que escalan y órdenes que se deshacen",
+   pista:"Escale una incidencia <b>catastrófica</b>: nadie en la cadena puede, y eso se dice con un resultado, no con una excepción.",
+   patrones:["chain","command","mediator"]},
+  {id:"reportes",    tit:"Reportes y alertas",  sub:"Qué se informa, cómo se escribe y quién se entera",
+   pista:"Emita el <b>mismo reporte</b> en los tres formatos: cambia cómo se escribe, no qué se informa.",
+   patrones:["builder","bridge","observer","visitor","adapter"]}
+];
+
+let moduloActual = null;
+const escapar = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* --- coloreado mínimo de Java, suficiente para leer el fragmento --- */
+const LLAVES_JAVA = /\b(abstract|boolean|break|case|catch|class|default|double|else|extends|final|for|if|implements|import|instanceof|int|interface|long|new|null|private|protected|public|return|static|super|switch|synchronized|this|throw|throws|true|false|try|void|while)\b/g;
+function pintarJava(src){
+  const marcas = [];
+  const guardar = (txt, clase) => { marcas.push('<span class="'+clase+'">'+escapar(txt)+'</span>'); return "\u0000"+(marcas.length-1)+"\u0000"; };
+  let s = src;
+  s = s.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, m => guardar(m,"c"));   // comentarios
+  s = s.replace(/"(?:[^"\\]|\\.)*"/g,            m => guardar(m,"s"));   // cadenas
+  s = escapar(s);
+  s = s.replace(LLAVES_JAVA, '<span class="k">$1</span>');
+  s = s.replace(/\b([A-Z][A-Za-z0-9_]*)\b/g, '<span class="t">$1</span>');
+  return s.replace(/\u0000(\d+)\u0000/g, (_,i) => marcas[+i]);
+}
+
+/* --- ficha de un patrón en el panel derecho --- */
+function fichaPatron(id, estado){
+  const p = PATRONES[id], f = FRAGMENTOS[id] || {};
+  const clases = ["patron"];
+  if (estado === "activo") clases.push("activo");
+  if (estado === "inerte") clases.push("inerte");
+  if (p.descartado)        clases.push("descartado");
+  const etqCat = p.descartado
+      ? '<span class="etq no">no implementado</span>'
+      : '<span class="etq '+p.cat+'">'+p.cat+'</span>';
+
+  return '<details class="'+clases.join(" ")+'" id="ficha-'+id+'">'
+    + '<summary class="patron-cab">'
+    +   '<span class="patron-punto"></span>'
+    +   '<span class="patron-tit"><span class="nom">'+p.nombre+'</span>'+etqCat
+    +     '<span class="etq semana">S'+p.semana+'</span>'
+    +     '<span class="rol">'+p.rol+'</span></span>'
+    +   '<span class="patron-flecha">&#9654;</span>'
+    + '</summary>'
+    + '<div class="patron-cuerpo">'
+    +   '<h4>El problema que resuelve</h4><p>'+p.problema+'</p>'
+    +   '<h4>Por qué este patrón</h4><p>'+p.porque+'</p>'
+    +   (p.frontera ? '<div class="nota-frontera"><b>Frontera.</b> '+p.frontera+'</div>' : '')
+    +   (p.descarte ? '<div class="nota-descarte"><b>Cuándo sí correspondería.</b> '+p.descarte+'</div>' : '')
+    +   '<h4>Dónde está en el código</h4>'
+    +   '<a class="ruta" href="../'+f.archivo+'" title="Abrir el archivo (requiere que esta carpeta viaje junto a las semanas)">'
+    +     '../'+f.archivo+'  ·  líneas '+f.desde+'–'+f.hasta+'</a>'
+    +   '<pre class="java">'+pintarJava(f.codigo||"")+'</pre>'
+    + '</div></details>';
+}
+
+/* --- pinta el panel: 'activos' se encienden, el resto queda apagado --- */
+const pocoMovimiento = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function panel(activos){
+  const mod = MODULOS.find(m => m.id === moduloActual);
+  const enc = new Set(activos || []);
+  const lista = document.getElementById("panel-lista");
+  // se conserva abierto lo que el usuario había desplegado
+  const abiertas = new Set([...lista.querySelectorAll("details[open]")].map(d => d.id));
+
+  lista.innerHTML = mod.patrones
+      .map(id => fichaPatron(id, enc.size === 0 ? "neutro" : (enc.has(id) ? "activo" : "inerte"))).join("");
+  abiertas.forEach(id => { const d = document.getElementById(id); if (d) d.open = true; });
+
+  document.getElementById("panel-sub").textContent = enc.size === 0
+      ? mod.patrones.length + " patrones intervienen en este módulo"
+      : "Encendidos por la última acción: " + [...enc].map(i => PATRONES[i].nombre).join(", ");
+
+  if (!enc.size) return;
+  // el primer patrón encendido se abre solo y se trae a la vista, para leerlo sin otro clic
+  const primero = document.getElementById("ficha-" + [...enc][0]);
+  if (!primero) return;
+  primero.open = true;
+  primero.classList.remove("destella");
+  void primero.offsetWidth;                       // reinicia la animación si se repite la acción
+  primero.classList.add("destella");
+  traerALaVista(primero);
+}
+
+/* Trae la ficha a la vista SIN mover la página entera: en pantalla ancha
+   basta con desplazar el propio panel; solo en pantalla angosta, donde el
+   panel queda debajo de la escena, se desplaza la ventana. */
+function traerALaVista(ficha){
+  const modo = pocoMovimiento() ? "auto" : "smooth";
+  if (window.innerWidth <= 1080){ ficha.scrollIntoView({behavior:modo, block:"nearest"}); return; }
+  const lista = document.getElementById("panel-lista");
+  const cl = lista.getBoundingClientRect(), cf = ficha.getBoundingClientRect();
+  if (cf.top < cl.top)         lista.scrollTo({top: lista.scrollTop + (cf.top - cl.top) - 10, behavior:modo});
+  else if (cf.bottom > cl.bottom) lista.scrollTo({top: lista.scrollTop + (cf.bottom - cl.bottom) + 10, behavior:modo});
+}
+
+/* --- consola de salida --- */
+function Consola(id){
+  const el = document.getElementById(id);
+  const api = {
+    limpiar(){ el.innerHTML = ""; return api; },
+    linea(txt, clase){
+      const s = document.createElement("span");
+      if (clase) s.className = clase;
+      s.textContent = (txt === undefined ? "" : txt) + "\n";
+      el.appendChild(s); el.scrollTop = el.scrollHeight; return api;
+    },
+    eco(txt){ return api.linea("> " + txt, "eco"); },
+    ok(txt){ return api.linea(txt, "ok"); },
+    mal(txt){ return api.linea(txt, "mal"); },
+    tenue(txt){ return api.linea(txt, "atenuado"); },
+    realce(txt){ return api.linea(txt, "realce"); },
+    blanco(){ return api.linea(""); }
+  };
+  return api;
+}
+
+/* --- navegación entre módulos --- */
+function irA(id){
+  moduloActual = id;
+  const mod = MODULOS.find(m => m.id === id);
+  document.getElementById("escena-tit").textContent = mod.tit;
+  document.getElementById("escena-sub").textContent = mod.sub;
+  document.getElementById("escena-pista").innerHTML = mod.pista ? "<b>Pruebe esto.</b> " + mod.pista : "";
+  document.querySelectorAll(".pantalla").forEach(p => { p.hidden = (p.id !== "p-" + id); });
+  document.querySelectorAll("#modulos button").forEach(b => {
+    b.setAttribute("aria-selected", String(b.dataset.modulo === id));
+  });
+  panel([]);
+  if (typeof sinDocumento === "function") sinDocumento();
+  if (typeof AL_ENTRAR[id] === "function") AL_ENTRAR[id]();
+}
+
+const AL_ENTRAR = {};   // cada módulo registra aquí lo que hace al abrirse
+
+document.getElementById("modulos").innerHTML = MODULOS.map((m,i) =>
+  '<button role="tab" data-modulo="'+m.id+'" aria-selected="false" aria-controls="p-'+m.id+'"'
+  + ' title="' + m.tit + '  (tecla ' + (i+1) + ')">'
+  + '<span class="n">'+(i+1)+'</span>'+m.tit+'</button>').join("");
+
+document.getElementById("modulos").addEventListener("click", e => {
+  const b = e.target.closest("button[data-modulo]"); if (b) irA(b.dataset.modulo);
+});
+
+/* Teclado: flechas para moverse entre módulos y 1..7 para saltar a uno.
+   Se ignora mientras se escribe en un campo. */
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const foco = document.activeElement;
+  if (foco && /^(INPUT|SELECT|TEXTAREA)$/.test(foco.tagName)) return;
+
+  const i = MODULOS.findIndex(m => m.id === moduloActual);
+  if (e.key === "ArrowRight" || e.key === "ArrowLeft"){
+    const salto = e.key === "ArrowRight" ? 1 : -1;
+    const destino = (i + salto + MODULOS.length) % MODULOS.length;
+    irA(MODULOS[destino].id);
+    document.querySelector('#modulos button[data-modulo="' + MODULOS[destino].id + '"]').focus();
+    e.preventDefault(); return;
+  }
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= MODULOS.length){ irA(MODULOS[n-1].id); e.preventDefault(); }
+});
+
+/* El panel se pega bajo la cabecera, sea cual sea su altura real. */
+function medirCabecera(){
+  const alto = document.querySelector(".cabecera").offsetHeight;
+  document.documentElement.style.setProperty("--alto-cabecera", alto + "px");
+}
+window.addEventListener("resize", medirCabecera);
+medirCabecera();
+</script>
+
+<script>
+"use strict";
+/* =====================================================================
+   3. MÓDULO 1 — SESIÓN Y ACCESO   (Singleton · Proxy · Facade)
+   ===================================================================== */
+const NIVEL = { OPERARIO:1, AGRONOMO:2, ADMINISTRADOR:3 };
+const USUARIOS = {
+  operario: {usuario:"operario", rol:"OPERARIO"},
+  agronomo: {usuario:"agronomo", rol:"AGRONOMO"},
+  admin:    {usuario:"admin",    rol:"ADMINISTRADOR"}
+};
+
+/* El Singleton: una sola instancia, creada la primera vez que se pide. */
+const SesionUsuario = (function(){
+  let instancia = null, vecesPedida = 0;
+  return {
+    getInstancia(){
+      vecesPedida++;
+      if (instancia === null) instancia = { usuario:null, rol:null, activa:false, creadaEn:vecesPedida };
+      return instancia;
+    },
+    vecesPedida(){ return vecesPedida; }
+  };
+})();
+
+const cSesion = Consola("s-consola");
+
+function pintarEstadoSesion(){
+  const s = SesionUsuario.getInstancia();
+  document.getElementById("s-estado").innerHTML = s.activa
+    ? '<span class="zona">usuario</span> <span class="dato">= ' + s.usuario + '</span>\n'
+      + '<span class="zona">rol</span>     <span class="dato">= ' + s.rol + '</span>\n'
+      + '<span class="zona">activa</span>  <span class="dato">= true</span>'
+    : '<span class="dato">sin sesión activa</span>';
+}
+
+document.getElementById("s-entrar").addEventListener("click", () => {
+  const u = USUARIOS[document.getElementById("s-usuario").value];
+  const s = SesionUsuario.getInstancia();
+  s.usuario = u.usuario; s.rol = u.rol; s.activa = true;
+  cSesion.limpiar()
+    .eco("fachada.iniciarJornada(\"" + u.usuario + "\", \"***\")")
+    .linea("  La fachada delega en el Singleton de sesión.")
+    .ok("  Sesión iniciada: " + u.usuario + " con rol " + u.rol);
+  pintarEstadoSesion();
+  panel(["singleton","facade"]);
+});
+
+document.getElementById("s-salir").addEventListener("click", () => {
+  const s = SesionUsuario.getInstancia();
+  if (!s.activa) { cSesion.limpiar().mal("  No hay ninguna sesión activa que cerrar."); panel(["singleton"]); return; }
+  cSesion.limpiar().eco("fachada.cerrarJornada()").ok("  Sesión de " + s.usuario + " cerrada.");
+  s.usuario = null; s.rol = null; s.activa = false;
+  pintarEstadoSesion();
+  panel(["singleton","facade"]);
+});
+
+document.getElementById("s-instancia").addEventListener("click", () => {
+  const a = SesionUsuario.getInstancia(), b = SesionUsuario.getInstancia();
+  cSesion.limpiar()
+    .eco("SesionUsuario a = SesionUsuario.getInstancia();")
+    .eco("SesionUsuario b = SesionUsuario.getInstancia();")
+    .linea("  a == b  ->  " + (a === b))
+    .ok("  Es el MISMO objeto: se pidió " + SesionUsuario.vecesPedida() + " veces y solo se creó una.")
+    .tenue("  El constructor es privado: no hay forma de crear una segunda.");
+  panel(["singleton"]);
+});
+
+document.querySelectorAll("#p-sesion [data-accion]").forEach(b => {
+  b.addEventListener("click", () => {
+    const op = b.dataset.accion;
+    const exigido = op === "monitorear" ? "OPERARIO" : (op === "reporte" ? "AGRONOMO" : "ADMINISTRADOR");
+    const etiqueta = {monitorear:"monitorearFinca()", reporte:"emitirReporteEstado(\"consola\")", cerrar:"cerrarJornada()"}[op];
+    const s = SesionUsuario.getInstancia();
+    cSesion.limpiar().eco("proxy." + etiqueta);
+
+    if (!s.activa){
+      cSesion.mal("  [PROXY] rechazado: no hay sesión activa.");
+      panel(["proxy","singleton"]); return;
+    }
+    cSesion.tenue("  [PROXY] rol en sesión: " + s.rol + " · rol exigido: " + exigido);
+    if (NIVEL[s.rol] >= NIVEL[exigido]){
+      cSesion.ok("  [PROXY] permitido, delega en el sistema real.")
+             .linea("  [SISTEMA] " + ({
+                monitorear:"recorre la finca y riega donde hace falta",
+                reporte:"construye el reporte y lo escribe en consola",
+                cerrar:"cierra la jornada y libera el sistema"
+             })[op]);
+      panel(["proxy","facade"]);
+    } else {
+      cSesion.mal("  [PROXY] ACCESO DENEGADO: " + s.rol + " no puede " + op + ".")
+             .tenue("  El sistema real no llega a enterarse de este intento.");
+      panel(["proxy"]);
+    }
+  });
+});
+
+AL_ENTRAR.sesion = pintarEstadoSesion;
+
+
+/* =====================================================================
+   4. MÓDULO 2 — LA FINCA   (Composite · Iterator · Prototype · A. Factory)
+   ===================================================================== */
+const cFinca = Consola("f-consola");
+
+function nuevoLote(nombre, cultivo, ha, umbral, sensores, actuador){
+  return {tipo:"lote", nombre, cultivo, ha, umbral, sensores:sensores.slice(), actuador};
+}
+function nuevaZona(nombre, hijos){ return {tipo:"zona", nombre, hijos:hijos||[]}; }
+
+const PLANTILLAS = {
+  "cafe-invernadero": nuevoLote("PLANTILLA Café","Cafe",2.0,45,["HUMEDAD","TEMPERATURA"],"GOTEO"),
+  "maiz-campo":       nuevoLote("PLANTILLA Maíz","Maiz",4.0,40,["HUMEDAD"],"ASPERSOR")
+};
+
+let finca, consecutivo;
+/* El árbol tiene profundidades DESIGUALES a propósito: un lote cuelga
+   directo de la finca y otro está dos niveles más abajo. Con un árbol
+   parejo, recorrer en profundidad y por niveles daría el mismo orden y
+   el Iterator no se vería. */
+function reiniciarFinca(){
+  finca = nuevaZona("Finca La Esperanza", [
+    nuevoLote("Lote-Patio","Hortalizas",0.6,50,["HUMEDAD"],"GOTEO"),
+    nuevaZona("Zona Norte", [
+      nuevoLote("Cafe-Norte","Cafe",2.5,45,["HUMEDAD","TEMPERATURA"],"GOTEO"),
+      nuevaZona("Zona Alta", [
+        nuevoLote("Cafe-Alto","Cafe",1.8,45,["HUMEDAD"],"GOTEO")
+      ])
+    ]),
+    nuevaZona("Zona Sur", [
+      nuevoLote("Maiz-Sur","Maiz",4.0,40,["HUMEDAD"],"ASPERSOR")
+    ])
+  ]);
+  consecutivo = 1;
+}
+
+/* Busca una zona por nombre: los índices fijos se rompen en cuanto el
+   árbol cambia de forma. */
+function zonaLlamada(nombre){
+  let hallada = null;
+  (function buscar(n){
+    if (n.tipo !== "zona" || hallada) return;
+    if (n.nombre === nombre){ hallada = n; return; }
+    n.hijos.forEach(buscar);
+  })(finca);
+  return hallada || finca;
+}
+
+/* El compuesto resuelve el total de forma recursiva: la misma llamada
+   sirve para la finca entera y para un solo lote. */
+function areaDe(n){ return n.tipo === "lote" ? n.ha : n.hijos.reduce((t,h) => t + areaDe(h), 0); }
+function sensoresDe(n){ return n.tipo === "lote" ? n.sensores.length : n.hijos.reduce((t,h) => t + sensoresDe(h), 0); }
+
+const plural = (n, sing, plu) => n + " " + (n === 1 ? sing : plu);
+
+function pintarArbol(){
+  const filas = [];
+  (function recorrer(n, nivel){
+    const sangria = "   ".repeat(nivel);
+    if (n.tipo === "zona"){
+      filas.push(sangria + '<span class="zona">+ ' + n.nombre + '</span> <span class="dato">['
+        + areaDe(n).toFixed(1) + ' ha, ' + plural(sensoresDe(n), 'sensor', 'sensores') + ']</span>');
+      n.hijos.forEach(h => recorrer(h, nivel + 1));
+    } else {
+      filas.push(sangria + '<span class="lote">- ' + n.nombre + '</span> <span class="dato">('
+        + n.cultivo + ') [' + n.ha.toFixed(1) + ' ha, ' + plural(n.sensores.length, 'sensor', 'sensores') + ', ' + n.actuador + ']</span>');
+    }
+  })(finca, 0);
+  document.getElementById("f-arbol").innerHTML = filas.join("\n");
+}
+
+/* Iterator externo: el estado del recorrido vive aquí, no en la zona. */
+function recorrerEnProfundidad(raiz){
+  const pila = [raiz], lotes = [];
+  while (pila.length){
+    const n = pila.pop();
+    if (n.tipo === "lote") lotes.push(n);
+    else for (let i = n.hijos.length - 1; i >= 0; i--) pila.push(n.hijos[i]);   // al revés: salen en orden
+  }
+  return lotes;
+}
+function recorrerPorNiveles(raiz){
+  const cola = [raiz], lotes = [];
+  while (cola.length){
+    const n = cola.shift();
+    if (n.tipo === "lote") lotes.push(n); else n.hijos.forEach(h => cola.push(h));
+  }
+  return lotes;
+}
+
+document.querySelectorAll("#p-finca [data-recorrido]").forEach(b => {
+  b.addEventListener("click", () => {
+    const enProfundidad = b.dataset.recorrido === "profundidad";
+    const lotes = (enProfundidad ? recorrerEnProfundidad : recorrerPorNiveles)(finca);
+    cFinca.limpiar()
+      .eco("for (Lote lote : finca.iterador(TipoRecorrido." + (enProfundidad ? "EN_PROFUNDIDAD" : "POR_NIVELES") + "))")
+      .tenue("  estructura interna: " + (enProfundidad ? "PILA (último en entrar, primero en salir)" : "COLA (primero en entrar, primero en salir)"));
+    lotes.forEach((l,i) => cFinca.linea("  " + (i+1) + ". " + l.nombre));
+    cFinca.blanco().ok("  " + lotes.length + " lotes. El árbol es el mismo; cambia el orden.");
+    panel(["iterator","composite"]);
+  });
+});
+
+document.getElementById("f-clonar").addEventListener("click", () => {
+  const clave = document.getElementById("f-plantilla").value;
+  const base = PLANTILLAS[clave];
+  const copia = JSON.parse(JSON.stringify(base));          // copia PROFUNDA, como el clone() del Java
+  copia.nombre = base.cultivo + "-" + (++consecutivo);
+  zonaLlamada(clave === "cafe-invernadero" ? "Zona Norte" : "Zona Sur").hijos.push(copia);
+  pintarArbol();
+  cFinca.limpiar()
+    .eco("Lote copia = catalogo.obtener(\"" + clave + "\").clone();")
+    .eco("copia.setNombre(\"" + copia.nombre + "\");")
+    .ok("  Clonado desde «" + base.nombre + "» con " + plural(copia.sensores.length, "sensor", "sensores") + " y umbral " + copia.umbral + " %.")
+    .tenue("  Copia PROFUNDA: cambiar el umbral de la copia no toca el de la plantilla.");
+  panel(["prototype","composite"]);
+});
+
+const FABRICAS = {
+  invernadero: {nombre:"FabricaInvernadero", sensor:"HUMEDAD de precisión (±0.5 %)", actuador:"GOTEO", umbral:45, cultivo:"Cafe"},
+  campo:       {nombre:"FabricaCampoAbierto", sensor:"HUMEDAD robusto (±3 %)",      actuador:"ASPERSOR", umbral:40, cultivo:"Maiz"}
+};
+let fabricaElegida = "invernadero";
+
+document.getElementById("f-fabrica").addEventListener("click", e => {
+  const b = e.target.closest("button[data-fabrica]"); if (!b) return;
+  fabricaElegida = b.dataset.fabrica;
+  document.querySelectorAll("#f-fabrica button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x.dataset.fabrica === fabricaElegida)));
+});
+
+document.getElementById("f-equipar").addEventListener("click", () => {
+  const f = FABRICAS[fabricaElegida];
+  const lote = nuevoLote(f.cultivo + "-" + (++consecutivo), f.cultivo, 2.0, f.umbral, ["HUMEDAD"], f.actuador);
+  zonaLlamada(fabricaElegida === "invernadero" ? "Zona Norte" : "Zona Sur").hijos.push(lote);
+  pintarArbol();
+  cFinca.limpiar()
+    .eco("FabricaEquipamiento fabrica = new " + f.nombre + "();")
+    .eco("estacion.equipar(fabrica);")
+    .linea("  sensor   -> " + f.sensor)
+    .linea("  actuador -> " + f.actuador)
+    .ok("  Lote «" + lote.nombre + "» equipado con una familia coherente.")
+    .tenue("  La fábrica impide mezclar: no hay forma de pedir sensor de invernadero con aspersor.");
+  panel(["abstract","composite"]);
+});
+
+document.getElementById("f-reiniciar").addEventListener("click", () => {
+  reiniciarFinca(); pintarArbol();
+  cFinca.limpiar().tenue("  Finca restaurada al árbol inicial de tres niveles.");
+  panel([]);
+});
+
+document.getElementById("f-plantilla").innerHTML = Object.keys(PLANTILLAS)
+  .map(k => '<option value="'+k+'">'+PLANTILLAS[k].nombre+' — umbral '+PLANTILLAS[k].umbral+' %, '+PLANTILLAS[k].sensores.length+' sensores</option>').join("");
+reiniciarFinca();
+AL_ENTRAR.finca = pintarArbol;
+
+
+/* =====================================================================
+   5. MÓDULO 3 — SENSORES   (Factory Method · Decorator · Flyweight: no)
+   ===================================================================== */
+const cSensor = Consola("x-consola");
+
+/* Factory Method: cada creador concreto sabe qué sensor fabricar. */
+const CREADORES = {
+  HUMEDAD:     {clase:"CreadorHumedad",     producto:"SensorHumedad",     unidad:"%", min:0,  max:100},
+  TEMPERATURA: {clase:"CreadorTemperatura", producto:"SensorTemperatura", unidad:"C", min:-5, max:50},
+  PH:          {clase:"CreadorPH",          producto:"SensorPH",          unidad:"pH", min:0, max:14}
+};
+
+let ordenInvertido = false;
+const decoradoresElegidos = () => {
+  const l = [];
+  if (document.getElementById("x-cal").checked) l.push("calibracion");
+  if (document.getElementById("x-val").checked) l.push("validacion");
+  if (document.getElementById("x-reg").checked) l.push("registro");
+  return ordenInvertido ? l.reverse() : l;
+};
+const NOMBRE_DEC = {calibracion:"SensorConCalibracion", validacion:"SensorConValidacion", registro:"SensorConRegistro"};
+
+function pintarPila(){
+  const l = decoradoresElegidos();
+  const tipo = document.getElementById("x-tipo").value;
+  const piezas = [CREADORES[tipo].producto].concat(l.map(d => NOMBRE_DEC[d]));
+  document.getElementById("x-pila").innerHTML = piezas
+    .map((p,i) => '<span class="chip'+(i ? " on" : "")+'">'+(i ? "↳ " : "")+p+'</span>').join("");
+}
+
+document.getElementById("x-crudo").addEventListener("input", e => {
+  document.getElementById("x-crudo-val").textContent = e.target.value;
+});
+["x-tipo","x-cal","x-val","x-reg"].forEach(id =>
+  document.getElementById(id).addEventListener("change", pintarPila));
+document.getElementById("x-invertir").addEventListener("click", () => {
+  ordenInvertido = !ordenInvertido; pintarPila();
+  cSensor.limpiar().tenue("  Orden de las envolturas " + (ordenInvertido ? "INVERTIDO" : "restaurado") + ". Vuelva a leer para ver el efecto.");
+  panel(["decorator"]);
+});
+
+document.getElementById("x-leer").addEventListener("click", () => {
+  const tipo  = document.getElementById("x-tipo").value;
+  const def   = CREADORES[tipo];
+  const crudo = parseFloat(document.getElementById("x-crudo").value);
+  const capas = decoradoresElegidos();
+
+  cSensor.limpiar()
+    .eco("CreadorSensor creador = new " + def.clase + "();")
+    .eco("Sensor sensor = creador.crearSensor(\"S-01\");")
+    .linea("  El creador devuelve un " + def.producto + "; quien lo usa solo ve la interfaz Sensor.");
+
+  if (capas.length){
+    cSensor.blanco().eco("sensor = " + capas.reduce((acc,d) => "new " + NOMBRE_DEC[d] + "(" + acc + ")", "sensor") + ";");
+  }
+
+  let valor = crudo, traza = [];
+  cSensor.blanco().linea("  Lectura cruda del hardware: " + crudo.toFixed(1) + " " + def.unidad);
+  capas.forEach(d => {
+    if (d === "calibracion"){
+      const antes = valor; valor = valor + 2.5;
+      cSensor.linea("  [calibración] " + antes.toFixed(1) + " -> " + valor.toFixed(1) + "  (corrige el desvío de fábrica)");
+    } else if (d === "validacion"){
+      const antes = valor; valor = Math.max(def.min, Math.min(def.max, valor));
+      cSensor.linea("  [validación]  " + antes.toFixed(1) + " -> " + valor.toFixed(1)
+        + (antes === valor ? "  (dentro del rango " + def.min + "–" + def.max + ")"
+                           : "  RECORTADO al rango " + def.min + "–" + def.max));
+    } else {
+      traza.push(valor);
+      cSensor.linea("  [registro]    deja traza: " + valor.toFixed(1) + " " + def.unidad);
+    }
+  });
+
+  cSensor.blanco().ok("  Lectura final: " + valor.toFixed(1) + " " + def.unidad);
+  if (capas.length >= 2){
+    cSensor.tenue("  Con las envolturas al revés el resultado puede cambiar: pruebe «Invertir el orden».");
+  }
+  panel(capas.length ? ["factory","decorator"] : ["factory"]);
+});
+
+AL_ENTRAR.sensores = pintarPila;
+</script>
+
+<script>
+"use strict";
+/* =====================================================================
+   6. MÓDULO 4 — RIEGO   (State · Strategy)
+   Las fórmulas son las mismas del Java: AhorroAgua recupera 3 puntos por
+   minuto con tope 15; Intensiva añade 10 puntos de margen, mínimo 10 y
+   tope 30; SegunClima parte de la de ahorro y la corrige con el clima.
+   ===================================================================== */
+const cRiego = Consola("r-consola");
+
+const ESTRATEGIAS = {
+  ahorro: {
+    nombre:"AHORRO DE AGUA",
+    calcular(humedad, umbral){
+      const deficit = umbral - humedad;
+      if (deficit <= 0) return {min:0, razon:"la humedad ya supera el umbral"};
+      return {min: Math.min(15, Math.ceil(deficit / 3.0)),
+              razon:"déficit de " + deficit.toFixed(0) + " puntos, recupera 3 por minuto"};
+    }
+  },
+  intensiva: {
+    nombre:"INTENSIVA",
+    calcular(humedad, umbral){
+      const deficit = umbral - humedad;
+      if (deficit <= 0) return {min:0, razon:"la humedad ya supera el umbral"};
+      return {min: Math.max(10, Math.min(30, Math.ceil((deficit + 10) / 3.0))),
+              razon:"déficit de " + deficit.toFixed(0) + " más 10 puntos de margen, mínimo 10 min"};
+    }
+  },
+  "clima-seco":   {nombre:"SEGÚN CLIMA (Servicio externo (EST-NORTE))", clima:{temp:30.3, hum:42}},
+  "clima-lluvia": {nombre:"SEGÚN CLIMA (EST-LLUVIA)",                   clima:{temp:22.0, hum:78}}
+};
+/* La estrategia según clima compone un ProveedorClima por constructor. */
+["clima-seco","clima-lluvia"].forEach(k => {
+  const c = ESTRATEGIAS[k].clima;
+  ESTRATEGIAS[k].calcular = function(humedad, umbral){
+    if (c.hum >= 60) return {min:0, razon:"humedad ambiente " + c.hum + " %: va a llover, no riega"};
+    const base = ESTRATEGIAS.ahorro.calcular(humedad, umbral);
+    if (base.min === 0) return base;
+    if (c.temp > 29) return {min: Math.min(20, Math.round(base.min * 1.5)),
+                             razon:"base " + base.min + " min, y a " + c.temp + " °C riega un 50 % más"};
+    return {min: base.min, razon:"base " + base.min + " min, clima templado: sin corrección"};
+  };
+});
+
+const ACTUADORES = {goteo:{nombre:"GOTEO", etiqueta:"Riego localizado", caudal:2.0},
+                    aspersor:{nombre:"ASPERSOR", etiqueta:"Riego por aspersión", caudal:15.0}};
+
+/* State: cada estado admite UNA transición; el resto las rechaza. */
+const ESTADOS = {
+  preparacion:{nombre:"en preparación", clase:"preparacion", riega:false, admite:{sembrar:"sembrado"}},
+  sembrado:   {nombre:"sembrado",       clase:"sembrado",    riega:true,  admite:{madurar:"maduro"}},
+  maduro:     {nombre:"maduro",         clase:"maduro",      riega:true,  admite:{cosechar:"barbecho"}},
+  barbecho:   {nombre:"en barbecho",    clase:"barbecho",    riega:false, admite:{prepararSuelo:"preparacion"}}
+};
+let estadoLote = "sembrado";
+
+function pintarEstadoLote(){
+  const e = ESTADOS[estadoLote];
+  document.getElementById("r-estado").innerHTML =
+      '<span class="estado-lote ' + e.clase + '">' + e.nombre + '</span>'
+    + '\n<span class="dato">admiteRiego() = ' + e.riega + '</span>'
+    + '\n<span class="dato">siguiente     = ' + Object.keys(e.admite)[0] + '()</span>';
+}
+
+document.getElementById("r-transiciones").addEventListener("click", e => {
+  const b = e.target.closest("button[data-trans]"); if (!b) return;
+  const t = b.dataset.trans, actual = ESTADOS[estadoLote];
+  cRiego.limpiar().eco("lote." + t + "()");
+  if (actual.admite[t]){
+    estadoLote = actual.admite[t];
+    cRiego.ok("  " + actual.nombre + "  ->  " + ESTADOS[estadoLote].nombre);
+  } else {
+    cRiego.mal("  Rechazado: un lote " + actual.nombre + " no admite «" + t + "».")
+          .tenue("  EstadoBase rechaza todo por defecto; cada estado solo sobreescribe su transición.");
+  }
+  pintarEstadoLote();
+  panel(["state"]);
+});
+
+function lecturaActual(){
+  return {humedad: +document.getElementById("r-humedad").value,
+          umbral:  +document.getElementById("r-umbral").value};
+}
+["r-humedad","r-umbral"].forEach(id => document.getElementById(id).addEventListener("input", () => {
+  document.getElementById("r-humedad-val").textContent = document.getElementById("r-humedad").value;
+  document.getElementById("r-umbral-val").textContent  = document.getElementById("r-umbral").value;
+}));
+
+document.getElementById("r-monitorear").addEventListener("click", () => {
+  const {humedad, umbral} = lecturaActual();
+  const est = ESTRATEGIAS[document.getElementById("r-estrategia").value];
+  const act = ACTUADORES[document.getElementById("r-actuador").value];
+  const estado = ESTADOS[estadoLote];
+
+  cRiego.limpiar().eco("lote.monitorear()")
+        .linea("  Lote Cafe-Norte | humedad medida " + humedad + " %, umbral " + umbral + " %")
+        .linea("    HUMEDAD  [S-H1] " + humedad.toFixed(1) + " %");
+
+  if (!estado.riega){
+    cRiego.blanco()
+      .mal("    Está " + estado.nombre + ": no corresponde regar")
+      .tenue("    El STATE cortó antes de preguntarle a la estrategia.")
+      .tenue("    La estrategia " + est.nombre + " sigue puesta; el estado no la borró.");
+    panel(["state"]); return;
+  }
+
+  const r = est.calcular(humedad, umbral);
+  cRiego.blanco().tenue("    [STATE] " + estado.nombre + " -> admiteRiego() = true, sigue adelante");
+  if (r.min === 0){
+    cRiego.linea("    Estrategia " + est.nombre + ": no riega ahora")
+          .tenue("    Motivo: " + r.razon)
+          .tenue("    El actuador no recibe ninguna orden.");
+  } else {
+    const litros = r.min * act.caudal;
+    cRiego.linea("    [STRATEGY] " + est.nombre + " -> " + r.min + " min")
+          .tenue("    Motivo: " + r.razon)
+          .ok("    [" + act.nombre + "] " + act.etiqueta + " " + r.min + " min -> " + litros.toFixed(1) + " L aplicados")
+          .tenue("    El actuador no decidió nada: solo aplicó agua durante esos minutos.");
+  }
+  panel(["state","strategy"]);
+});
+
+document.getElementById("r-comparar").addEventListener("click", () => {
+  const {humedad, umbral} = lecturaActual();
+  const act = ACTUADORES[document.getElementById("r-actuador").value];
+  cRiego.limpiar()
+    .eco("mismo lote, misma lectura (" + humedad + " %), cuatro políticas")
+    .blanco();
+  Object.keys(ESTRATEGIAS).forEach(k => {
+    const e = ESTRATEGIAS[k], r = e.calcular(humedad, umbral);
+    const litros = r.min ? (r.min * act.caudal).toFixed(1) + " L" : "—";
+    cRiego.linea("  " + e.nombre.padEnd(42) + " -> " + String(r.min).padStart(2) + " min   " + litros);
+  });
+  cRiego.blanco().ok("  El sensor no cambió: cambió la política. El lote no se modificó.");
+  panel(["strategy"]);
+});
+
+AL_ENTRAR.riego = pintarEstadoLote;
+
+
+/* =====================================================================
+   7. MÓDULO 5 — PREDICCIÓN   (Template Method)
+   ===================================================================== */
+const cPred = Consola("d-consola");
+const MERMA = 0.08;
+const CLIMAS = {seca:{nombre:"EST-SECA", temp:31, hum:30}, neutra:{nombre:"EST-NEUTRA", temp:25, hum:45},
+                humeda:{nombre:"EST-HUMEDA", temp:24, hum:70}};
+
+const MODELOS = {
+  promedio: {nombre:"PROMEDIO MOVIL 3", usaGancho:false,
+    base(h){ const u = h.slice(-3); return u.reduce((a,b) => a+b, 0) / u.length; }},
+  tendencia:{nombre:"TENDENCIA LINEAL", usaGancho:false,
+    base(h){
+      const n = h.length;
+      if (n === 1) return h[0];
+      const mx = (n-1)/2, my = h.reduce((a,b)=>a+b,0)/n;
+      let num = 0, den = 0;
+      h.forEach((y,i) => { num += (i-mx)*(y-my); den += (i-mx)*(i-mx); });
+      const m = den === 0 ? 0 : num/den;
+      return Math.max(0, my + m * (n - mx));                 // proyecta la siguiente cosecha
+    }},
+  estacion: {nombre:"POR ESTACION x1.10", usaGancho:true,
+    base(h){ return (h.reduce((a,b)=>a+b,0) / h.length) * 1.10; }},
+  optimista:{nombre:"OPTIMISTA (nuevo)", usaGancho:false,
+    base(h){ return Math.max.apply(null, h); }}
+};
+
+function leerHistorico(){
+  const crudo = document.getElementById("d-historico").value;
+  const partes = crudo.split(",").map(s => s.trim()).filter(s => s !== "");
+  if (!partes.length) throw new Error("El historico de cosechas esta vacio");
+  const nums = partes.map(s => {
+    const v = Number(s);
+    if (!isFinite(v)) throw new Error("El historico tiene un valor que no es un numero: " + s);
+    if (v < 0) throw new Error("El historico tiene una cosecha negativa: " + v.toFixed(1));
+    return v;
+  });
+  return nums;
+}
+
+/* El método plantilla: cuatro pasos, siempre en el mismo orden. */
+function estimar(modelo, historico, clima){
+  const traza = [];
+  traza.push("1. Validacion: " + historico.length + " cosechas historicas de Maiz-Sur");
+  const base = modelo.base(historico);
+  traza.push("2. Base (" + modelo.nombre + "): " + base.toFixed(2) + " t");
+  let ajustada = base;
+  if (modelo.usaGancho){                                     // solo un modelo sobreescribe el gancho
+    if (clima.hum < 35) ajustada = base * 0.90;
+    else if (clima.hum >= 60) ajustada = base * 1.05;
+  }
+  traza.push(Math.abs(ajustada - base) < 0.0001
+    ? "3. Ajuste por clima: sin cambio (" + base.toFixed(2) + " t)"
+    : "3. Ajuste por clima: " + base.toFixed(2) + " t -> " + ajustada.toFixed(2) + " t");
+  const neta = ajustada * (1 - MERMA);
+  traza.push("4. Merma poscosecha 8 %: " + ajustada.toFixed(2) + " t -> " + neta.toFixed(2) + " t");
+  return {base, ajustada, neta, traza};
+}
+
+function correrModelo(clave, historico, clima, c){
+  const m = MODELOS[clave], r = estimar(m, historico, clima);
+  c.blanco().realce("    > " + m.nombre);
+  r.traza.forEach(t => c.linea("      " + t));
+  c.ok("      = " + r.neta.toFixed(2) + " t netas");
+  return r;
+}
+
+document.getElementById("d-estimar").addEventListener("click", () => {
+  const clima = CLIMAS[document.getElementById("d-clima").value];
+  const clave = document.getElementById("d-modelo").value;
+  cPred.limpiar();
+  let historico;
+  try { historico = leerHistorico(); }
+  catch (e){
+    cPred.eco("modelo.estimar(lote, historico)")
+         .mal("  IllegalArgumentException: " + e.message)
+         .tenue("  La validación es un paso PRIVADO de la plantilla: ningún modelo puede saltársela.");
+    panel(["template"]); return;
+  }
+  cPred.eco("modelo.estimar(lote, new double[]{" + historico.map(n=>n.toFixed(1)).join(", ") + "})")
+       .tenue("  Clima de la temporada: " + clima.nombre + " (" + clima.temp + " °C, " + clima.hum + " %)");
+  correrModelo(clave, historico, clima, cPred);
+  if (!MODELOS[clave].usaGancho){
+    cPred.blanco().tenue("  Este modelo NO sobreescribe el gancho del clima: el paso 3 lo dejó igual,");
+    cPred.tenue("  y aun así se ejecutó, porque el orden lo fija la plantilla, no el modelo.");
+  }
+  panel(["template"]);
+});
+
+document.getElementById("d-todos").addEventListener("click", () => {
+  const clima = CLIMAS[document.getElementById("d-clima").value];
+  cPred.limpiar();
+  let historico;
+  try { historico = leerHistorico(); }
+  catch (e){ cPred.mal("  IllegalArgumentException: " + e.message); panel(["template"]); return; }
+  cPred.eco("los cuatro modelos, el mismo histórico")
+       .tenue("  Clima: " + clima.nombre + " (" + clima.hum + " % de humedad ambiente)");
+  Object.keys(MODELOS).forEach(k => correrModelo(k, historico, clima, cPred));
+  cPred.blanco()
+       .ok("  Los cuatro renglones salen en el mismo orden en los cuatro modelos.")
+       .tenue("  Lo único que cambia son los números del paso 2, que es el hueco abstracto.");
+  panel(["template"]);
+});
+</script>
+
+<script>
+"use strict";
+/* =====================================================================
+   8. MÓDULO 6 — OPERACIONES   (Chain of Responsibility · Command · Mediator)
+   ===================================================================== */
+const cOper = Consola("o-consola");
+
+const SEVERIDADES = {LEVE:1, MEDIA:2, CRITICA:3, CATASTROFICA:4};
+const CADENA = [
+  {rol:"OPERARIO",      atiende:["LEVE"]},
+  {rol:"AGRONOMO",      atiende:["MEDIA"]},
+  {rol:"ADMINISTRADOR", atiende:["CRITICA"]}
+];
+const ACCION_POR_TIPO = {
+  HUMEDAD_BAJA:    {clase:"OrdenRegar",                 desc:"regar 12 min el lote Cafe-Norte",           reversible:false},
+  SENSOR_AVERIADO: {clase:"OrdenInstalarSensor",        desc:"instalar un sensor de repuesto en Maiz-Sur", reversible:true},
+  CADENA_FRIO:     {clase:"OrdenCambiarUmbralHumedad",  desc:"bajar el umbral de humedad de 45 % a 38 %",  reversible:true}
+};
+
+let historial = [];      // LIFO: lo ejecutado, para deshacer
+let cola = [];           // FIFO: lo pendiente de ejecutar
+
+function pintarHistorial(){
+  const el = document.getElementById("o-historial");
+  const filas = [];
+  if (cola.length){
+    filas.push('<span class="zona">cola pendiente (FIFO)</span>');
+    cola.forEach((o,i) => filas.push('  <span class="dato">' + (i+1) + '. ' + o.desc + '</span>'));
+  }
+  if (historial.length){
+    filas.push('<span class="zona">historial ejecutado (LIFO)</span>');
+    historial.forEach((o,i) => filas.push('  <span class="dato">' + (i+1) + '. ' + o.desc
+      + (o.reversible ? '' : '  [no reversible]') + '</span>'));
+  }
+  el.innerHTML = filas.length ? filas.join("\n") : '<span class="dato">sin órdenes todavía</span>';
+  document.getElementById("o-deshacer").disabled = !historial.some(o => o.reversible);
+  document.getElementById("o-ejecutar").disabled = cola.length === 0;
+}
+
+document.getElementById("o-escalar").addEventListener("click", () => {
+  const tipo = document.getElementById("o-tipo").value;
+  const sev  = document.getElementById("o-severidad").value;
+  const incidencia = tipo + " (" + sev + ") en Cafe-Norte";
+
+  cOper.limpiar()
+    .eco("centro.notificar(estacion, Evento.LECTURA_ANOMALA, lote)")
+    .tenue("  [CENTRO] la estación informa un hecho; el centro decide a quién enrutarlo")
+    .tenue("  [CENTRO] -> gestor de incidencias")
+    .blanco()
+    .eco("cadena.manejar(new Incidencia(" + tipo + ", " + sev + "))");
+
+  let atendidaPor = null;
+  for (const eslabon of CADENA){
+    if (eslabon.atiende.includes(sev)){
+      cOper.ok("  [" + eslabon.rol + "] me hago cargo: " + incidencia);
+      atendidaPor = eslabon.rol; break;
+    }
+    cOper.linea("  [" + eslabon.rol + "] no es de mi competencia, escalo");
+  }
+
+  if (!atendidaPor){
+    cOper.mal("  [CADENA] nadie pudo atender: " + incidencia)
+         .tenue("  Se devuelve un ResultadoAtencion sin atender; no se lanza una excepción.")
+         .tenue("  [CENTRO] registra en bitácora: Sin atender");
+    panel(["chain","mediator"]); pintarHistorial(); return;
+  }
+
+  const plan = ACCION_POR_TIPO[tipo];
+  cola.push({desc:plan.desc, clase:plan.clase, reversible:plan.reversible, rol:atendidaPor});
+  cOper.blanco()
+    .linea("  " + atendidaPor + " produce la orden: new " + plan.clase + "(...)")
+    .tenue("  atender() DEVUELVE la orden; no la ejecuta. Ejecutarla es del Command.")
+    .tenue("  [CENTRO] -> operaciones de campo, que la encolan");
+  pintarHistorial();
+  panel(["chain","command","mediator"]);
+});
+
+document.getElementById("o-ejecutar").addEventListener("click", () => {
+  if (!cola.length) return;
+  cOper.limpiar().eco("panel.ejecutarCola()");
+  while (cola.length){
+    const o = cola.shift();
+    cOper.ok("  [EJECUTA] " + o.clase + ": " + o.desc);
+    cOper.tenue("  [CENTRO] bitácora -> Ejecutada: " + o.desc);
+    historial.push(o);
+  }
+  cOper.blanco().tenue("  El panel no sabe qué hace cada orden: solo les pide ejecutar().");
+  pintarHistorial();
+  panel(["command","mediator"]);
+});
+
+document.getElementById("o-deshacer").addEventListener("click", () => {
+  cOper.limpiar().eco("panel.deshacerUltima()");
+  for (let i = historial.length - 1; i >= 0; i--){
+    if (historial[i].reversible){
+      const o = historial.splice(i,1)[0];
+      cOper.ok("  [DESHACE] " + o.clase + ": se revierte «" + o.desc + "»");
+      cOper.tenue("  La orden sabe deshacerse a sí misma; el panel solo le pide deshacer().");
+      pintarHistorial(); panel(["command"]); return;
+    }
+    cOper.mal("  [" + historial[i].clase + "] no es reversible: regar es agua que ya cayó.");
+  }
+  cOper.tenue("  No queda ninguna orden reversible en el historial.");
+  pintarHistorial(); panel(["command"]);
+});
+
+AL_ENTRAR.operaciones = pintarHistorial;
+
+
+/* =====================================================================
+   9. MÓDULO 7 — REPORTES Y ALERTAS
+      (Builder · Bridge · Observer · Visitor · Adapter)
+   ===================================================================== */
+const cRep = Consola("t-consola");
+let formatoElegido = "consola";
+
+document.getElementById("t-formato").addEventListener("click", e => {
+  const b = e.target.closest("button[data-formato]"); if (!b) return;
+  formatoElegido = b.dataset.formato;
+  document.querySelectorAll("#t-formato button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x.dataset.formato === formatoElegido)));
+});
+
+/* Los datos del reporte salen del mismo árbol Composite del módulo 2: lo
+   que se clona o se equipa allí aparece aquí sin tocar nada. */
+function lotesDeLaFinca(){ return recorrerPorNiveles(finca); }
+
+/* Columnas de ancho fijo, para que el .txt se lea alineado. */
+function enColumnas(celdas){
+  return ("  " + celdas.map((x, i) => String(x).padEnd(i === 0 ? 16 : 12)).join("")).replace(/\s+$/, "");
+}
+
+/* Cada salida decide CÓMO se escribe lo que el reporte quiere informar.
+   Nótese que SalidaCsv descarta título y pie: un CSV con texto suelto
+   antes de la cabecera se abre mal en una hoja de cálculo. Esa decisión
+   es suya, no del reporte, y eso es exactamente lo que defiende el Bridge. */
+const SALIDAS = {
+  consola: {
+    clase:"SalidaConsola", ext:"txt", mime:"text/plain",
+    titulo:   t => ["### " + t, ""],
+    cabecera: c => [enColumnas(c), "  " + "-".repeat(Math.max(28, enColumnas(c).length - 2))],
+    fila:     c => enColumnas(c),
+    pie:      t => ["", "--- " + t]
+  },
+  markdown: {
+    clase:"SalidaMarkdown", ext:"md", mime:"text/markdown",
+    titulo:   t => ["## " + t, ""],
+    cabecera: c => ["| " + c.join(" | ") + " |", "|" + c.map(() => "---").join("|") + "|"],
+    fila:     c => "| " + c.join(" | ") + " |",
+    pie:      t => ["", "_" + t + "_"]
+  },
+  csv: {
+    clase:"SalidaCsv", ext:"csv", mime:"text/csv",
+    titulo:   () => [],
+    cabecera: c => [c.join(";")],
+    fila:     c => c.join(";"),
+    pie:      () => []
+  }
+};
+
+/* =============== El documento, aparte de la narración ===============
+   La consola mezcla el reporte con el eco de las llamadas Java y los
+   comentarios; el archivo que se descarga lleva SOLO el documento. */
+let documentoActual = null;      // {nombre, mime, texto}
+
+const hoy = () => new Date().toISOString().slice(0, 10);
+
+function publicarDocumento(base, ext, mime, lineas){
+  documentoActual = {nombre: "agroprecision-" + base + "-" + hoy() + "." + ext,
+                     mime: mime, texto: lineas.join("\n") + "\n"};
+  document.getElementById("t-nombre").textContent = documentoActual.nombre;
+  document.getElementById("t-descargar").textContent = "Descargar ." + ext;
+  document.getElementById("t-descarga").hidden = false;
+  document.getElementById("t-respaldo").hidden = true;
+}
+
+function sinDocumento(){
+  documentoActual = null;
+  document.getElementById("t-descarga").hidden = true;
+  document.getElementById("t-respaldo").hidden = true;
+}
+
+/* Pinta el documento en la consola, con la sangría que usa el resto. */
+function mostrarDocumento(lineas){ lineas.forEach(l => cRep.linea("  " + l)); }
+
+function descargarDocumento(){
+  if (!documentoActual) return;
+  // El BOM hace que Excel abra el CSV con los acentos correctos.
+  const bom = documentoActual.mime === "text/csv" ? "﻿" : "";
+  try {
+    const blob = new Blob([bom + documentoActual.texto],
+                          {type: documentoActual.mime + ";charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = documentoActual.nombre;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    document.getElementById("t-respaldo").hidden = true;
+  } catch (e) {
+    mostrarRespaldo();                       // algún navegador lo impidió
+  }
+}
+
+/* Si la descarga no es posible, el texto queda a la vista para copiarlo. */
+function mostrarRespaldo(){
+  if (!documentoActual) return;
+  document.getElementById("t-respaldo-texto").value = documentoActual.texto;
+  document.getElementById("t-respaldo").hidden = false;
+  document.getElementById("t-respaldo").scrollIntoView(
+      {behavior: pocoMovimiento() ? "auto" : "smooth", block:"nearest"});
+}
+
+function copiarDocumento(){
+  if (!documentoActual) return;
+  const avisar = ok => {
+    const b = document.getElementById("t-copiar");
+    const antes = b.textContent;
+    b.textContent = ok ? "Copiado" : "No se pudo copiar";
+    setTimeout(() => { b.textContent = antes; }, 1600);
+    if (!ok) mostrarRespaldo();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(documentoActual.texto)
+      .then(() => avisar(true)).catch(() => avisar(false));
+    return;
+  }
+  // Respaldo para navegadores sin API de portapapeles (file:// en algunos casos)
+  const ta = document.createElement("textarea");
+  ta.value = documentoActual.texto;
+  ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  document.body.removeChild(ta);
+  avisar(ok);
+}
+
+document.getElementById("t-descargar").addEventListener("click", descargarDocumento);
+document.getElementById("t-copiar").addEventListener("click", copiarDocumento);
+document.getElementById("t-ver").addEventListener("click", mostrarRespaldo);
+
+/* ---------------------- Builder + Bridge ---------------------- */
+document.getElementById("t-emitir").addEventListener("click", () => {
+  const tipo = document.getElementById("t-reporte").value;
+  const s = SALIDAS[formatoElegido];
+  const lotes = lotesDeLaFinca();
+  const doc = [];
+
+  // El builder añade las secciones en orden; el bridge decide cómo se escriben.
+  if (tipo === "estado"){
+    doc.push.apply(doc, s.titulo("Estado de la finca — " + hoy()));
+    doc.push.apply(doc, s.cabecera(["lote", "cultivo", "hectareas", "sensores", "riego"]));
+    lotes.forEach(l => doc.push(s.fila(
+        [l.nombre, l.cultivo, l.ha.toFixed(1), l.sensores.length, l.actuador])));
+    doc.push.apply(doc, s.pie(plural(lotes.length, "lote", "lotes")
+        + " · " + areaDe(finca).toFixed(1) + " ha en total"));
+  } else {
+    const secos = lotes.filter(l => l.umbral >= 45);
+    doc.push.apply(doc, s.titulo("Alertas abiertas — " + hoy()));
+    doc.push.apply(doc, s.cabecera(["lote", "alerta", "umbral"]));
+    if (!secos.length) doc.push(s.fila(["—", "sin alertas", "—"]));
+    secos.forEach(l => doc.push(s.fila([l.nombre, "umbral exigente", l.umbral + " %"])));
+    doc.push.apply(doc, s.pie(plural(secos.length, "alerta", "alertas")));
+  }
+
+  cRep.limpiar()
+    .eco("Reporte r = new " + (tipo === "estado" ? "ReporteEstado" : "ReporteAlertas") + "(new " + s.clase + "());")
+    .eco("r.generar();")
+    .tenue("  El reporte sabe QUÉ informar; la salida sabe CÓMO escribirlo. Son dos jerarquías.")
+    .blanco();
+  mostrarDocumento(doc);
+  cRep.blanco().ok("  Mismo contenido, otro formato: cambie el formato y vuelva a emitir.")
+      .tenue("  El archivo que se descarga lleva solo el documento, sin estos comentarios.");
+
+  publicarDocumento(tipo, s.ext, s.mime, doc);
+  panel(["builder","bridge"]);
+});
+
+/* ---------------------------- Observer ---------------------------- */
+document.getElementById("t-alertar").addEventListener("click", () => {
+  const suscritos = [];
+  if (document.getElementById("t-panel").checked)     suscritos.push("PanelDeAlertas");
+  if (document.getElementById("t-historial").checked) suscritos.push("HistorialAlertas");
+  if (document.getElementById("t-contador").checked)  suscritos.push("ContadorPorSeveridad");
+
+  const lotes = lotesDeLaFinca();
+  const alertas = lotes.filter(l => l.umbral >= 45).map(l => ({lote:l.nombre, sev:"MEDIA"}));
+
+  cRep.limpiar()
+    .eco("monitor.revisarFinca(finca)")
+    .tenue("  Observadores suscritos: " + (suscritos.length ? suscritos.join(", ") : "ninguno"))
+    .blanco();
+
+  if (!alertas.length){
+    cRep.tenue("  Ningún lote supera el umbral de aviso.");
+    sinDocumento(); panel(["observer"]); return;
+  }
+
+  const bitacora = ["fecha;lote;severidad;observador"];
+  alertas.forEach(a => {
+    cRep.realce("  ALERTA " + a.sev + " en " + a.lote);
+    if (!suscritos.length) cRep.tenue("    (publicada, pero nadie estaba suscrito para enterarse)");
+    suscritos.forEach(o => {
+      cRep.linea({
+        PanelDeAlertas:       "    [PANEL] muestra: " + a.sev + " · " + a.lote,
+        HistorialAlertas:     "    [HISTORIAL] guarda la alerta de " + a.lote,
+        ContadorPorSeveridad: "    [CONTADOR] " + a.sev + " +1"
+      }[o]);
+      bitacora.push([hoy(), a.lote, a.sev, o].join(";"));
+    });
+  });
+  cRep.blanco()
+    .ok("  " + plural(alertas.length, "alerta publicada", "alertas publicadas") + " a "
+        + plural(suscritos.length, "observador", "observadores") + ".")
+    .tenue("  El monitor no sabe quiénes son: recorre una copia de su lista y avisa.")
+    .tenue("  Desmarque uno y vuelva a pulsar: nada del monitor cambia.");
+
+  // La bitácora que deja el HistorialAlertas sí es un documento descargable.
+  if (suscritos.length) publicarDocumento("alertas-bitacora", "csv", "text/csv", bitacora);
+  else sinDocumento();
+  panel(["observer"]);
+});
+
+/* ----------------------------- Visitor ----------------------------- */
+document.querySelectorAll("#p-reportes [data-visita]").forEach(b => {
+  b.addEventListener("click", () => {
+    const v = b.dataset.visita, lotes = lotesDeLaFinca();
+    const nombre = {inventario:"VisitanteInventario", costo:"VisitanteCostoRiego", csv:"VisitanteExportarCsv"}[v];
+    const doc = [];
+
+    cRep.limpiar()
+      .eco("finca.aceptar(new " + nombre + "());")
+      .tenue("  El RECORRIDO vive en ZonaCultivo.aceptar(); el visitante solo dice qué hacer en cada nodo.")
+      .blanco();
+
+    if (v === "inventario"){
+      doc.push("Inventario de la finca — " + hoy(), "");
+      lotes.forEach(l => doc.push(l.nombre.padEnd(14) + " " + l.cultivo.padEnd(12)
+        + plural(l.sensores.length, "sensor ", "sensores") + " · " + l.actuador));
+      doc.push("", plural(lotes.length, "lote", "lotes") + " · "
+        + plural(sensoresDe(finca), "sensor", "sensores") + " · " + areaDe(finca).toFixed(1) + " ha");
+      mostrarDocumento(doc);
+      publicarDocumento("inventario", "txt", "text/plain", doc);
+
+    } else if (v === "costo"){
+      let total = 0;
+      doc.push("Costo de riego de una pasada — " + hoy(), "");
+      lotes.forEach(l => {
+        const riega = ESTADOS[estadoLote].riega || l.nombre !== "Cafe-Norte";
+        const litros = riega ? l.ha * 20 : 0;
+        total += litros;
+        doc.push(l.nombre.padEnd(14) + (riega ? litros.toFixed(0) + " L" : "0 L  (no admite riego ahora)"));
+      });
+      doc.push("", "Total: " + total.toFixed(0) + " L");
+      mostrarDocumento(doc);
+      cRep.tenue("  El visitante pregunta lote.admiteRiego(): el STATE responde y el total baja.");
+      publicarDocumento("costo-riego", "txt", "text/plain", doc);
+
+    } else {
+      doc.push("lote;cultivo;hectareas;sensores;actuador");
+      lotes.forEach(l => doc.push([l.nombre, l.cultivo, l.ha.toFixed(1), l.sensores.length, l.actuador].join(";")));
+      mostrarDocumento(doc);
+      cRep.blanco().ok("  " + plural(lotes.length, "fila exportada", "filas exportadas") + ".");
+      publicarDocumento("finca", "csv", "text/csv", doc);
+    }
+
+    cRep.tenue("  Una operación nueva es un visitante nuevo: ni ZonaCultivo ni Lote se tocan.");
+    panel(["visitor"]);
+  });
+});
+
+document.getElementById("t-clima").addEventListener("click", () => {
+  const f = 86.5, fraccion = 0.42;                 // lo que entrega el servicio externo
+  const c = (f - 32) * 5 / 9;
+  cRep.limpiar()
+    .eco("ProveedorClima clima = new AdaptadorClimaExterno(new ServicioClimaExterno(), \"EST-NORTE\");")
+    .tenue("  El servicio externo habla en Fahrenheit y en fracción; el sistema, en Celsius y porcentaje.")
+    .blanco()
+    .linea("  servicio.getTempF(\"EST-NORTE\")     -> " + f.toFixed(1) + " F")
+    .linea("  servicio.getHumedadFrac(\"EST-NORTE\") -> " + fraccion.toFixed(2))
+    .blanco()
+    .ok("  clima.obtenerTemperatura() -> " + c.toFixed(1) + " C")
+    .ok("  clima.obtenerHumedad()     -> " + (fraccion * 100).toFixed(1) + " %")
+    .blanco()
+    .tenue("  El adaptador compone al servicio, no hereda de él: es código de otro y no se puede tocar.");
+  sinDocumento();                    // una consulta no es un documento descargable
+  panel(["adapter"]);
+});
+
+/* ---------------------------------------------------------------- */
+irA("sesion");
+</script>
+</body>
+</html>
