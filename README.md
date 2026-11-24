@@ -50,6 +50,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 12 — Chain of Responsibility y Command](#semana-12--patrones-chain-of-responsibility-y-command)
   - [Semana 13 — Iterator y Mediator](#semana-13--patrones-iterator-y-mediator)
   - [Semana 14 — Observer, State y Visitor](#semana-14--patrones-observer-state-y-visitor)
+  - [Semana 15 — Strategy y Template Method](#semana-15--patrones-strategy-y-template-method)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -144,6 +145,12 @@ agroprecision/
 │   ├── test/
 │   ├── diagramas/
 │   └── evidencias/
+├── semana-15-strategy-template-method/  Patrones Strategy y Template Method
+│   ├── README.md
+│   ├── src/
+│   ├── test/
+│   ├── diagramas/
+│   └── evidencias/
 └── lib/                            junit-platform-console-standalone (JUnit 5)
 ```
 
@@ -163,6 +170,7 @@ agroprecision/
 | [`semana-12-chain-command/`](semana-12-chain-command/) | Semana 12 — Chain of Responsibility (atención de incidencias) y Command (órdenes con bitácora y deshacer) |
 | [`semana-13-iterator-mediator/`](semana-13-iterator-mediator/) | Semana 13 — Iterator (recorridos del árbol) y Mediator (centro de operaciones) |
 | [`semana-14-observer-state-visitor/`](semana-14-observer-state-visitor/) | Semana 14 — Observer (alertas), State (ciclo del lote) y Visitor (operaciones sobre la finca) |
+| [`semana-15-strategy-template-method/`](semana-15-strategy-template-method/) | Semana 15 — Strategy (política de riego) y Template Method (predicción de cosecha) |
 | [`lib/`](lib/) | JUnit 5 (jar autónomo) para las pruebas unitarias |
 
 ## ▶️ Cómo ejecutar
@@ -213,6 +221,10 @@ cd semana-13-iterator-mediator/src && javac *.java && java MainDemoIteratorMedia
 cd semana-14-observer-state-visitor/src && javac *.java && java MainDemoObserverStateVisitor
 ```
 
+```bash
+cd semana-15-strategy-template-method/src && javac *.java && java MainDemoStrategyTemplate
+```
+
 Las pruebas unitarias se ejecutan con JUnit 5, sin Maven ni Gradle:
 
 ```bash
@@ -241,6 +253,10 @@ cd semana-13-iterator-mediator && ./pruebas.sh
 
 ```bash
 cd semana-14-observer-state-visitor && ./pruebas.sh
+```
+
+```bash
+cd semana-15-strategy-template-method && ./pruebas.sh
 ```
 
 La Semana 10 incluye además un banco de medición de memoria que sustenta la decisión de no
@@ -277,6 +293,7 @@ incluye además su código y las evidencias de las pruebas ejecutadas.
 | 12 | Chain of Responsibility · Command | Incidencias y órdenes | [Ver](semana-12-chain-command/) | [Ver](semana-12-chain-command/src/) | [6 capturas](semana-12-chain-command/evidencias/) | _(pendiente)_ |
 | 13 | Iterator · Mediator | Recorridos y coordinación | [Ver](semana-13-iterator-mediator/) | [Ver](semana-13-iterator-mediator/src/) | [6 capturas](semana-13-iterator-mediator/evidencias/) | _(pendiente)_ |
 | 14 | Observer · State · Visitor | Alertas, ciclo del lote y reportes | [Ver](semana-14-observer-state-visitor/) | [Ver](semana-14-observer-state-visitor/src/) | [7 capturas](semana-14-observer-state-visitor/evidencias/) | _(pendiente)_ |
+| 15 | Strategy · Template Method | Riego y predicción de cosecha | [Ver](semana-15-strategy-template-method/) | [Ver](semana-15-strategy-template-method/src/) | [7 capturas](semana-15-strategy-template-method/evidencias/) | _(pendiente)_ |
 
 > \* En la Semana 10 el patrón **Flyweight no se implementa**: se analiza y se documenta, con una
 > medición de memoria, por qué no corresponde hacerlo a la escala actual del prototipo y bajo qué
@@ -485,6 +502,30 @@ La integración se mide: antes de cosechar el maizal el costo de riego estima 19
 📄 **[Documento completo de la Semana 14](semana-14-observer-state-visitor/)** — explicación de los
 tres patrones, diagramas UML, 26 pruebas unitarias y las siete capturas.
 
+### Semana 15 — Patrones Strategy y Template Method
+
+Dos patrones que resuelven el mismo problema —varias versiones de un algoritmo— con mecanismos
+opuestos, y con esta semana se cierra el catálogo GoF del proyecto.
+
+**Strategy** salda una deuda que el proyecto arrastraba desde la Semana 6: el lote regaba
+`actuador.regar(10)`, con los diez minutos quemados en el código. Ahora la política vive en
+`EstrategiaRiego`, y el mismo lote con la misma lectura de 30 % aplica 10 litros con la política de
+ahorro, 20 con la intensiva, 16 si hace calor y **ninguno** si el ambiente está saturado. `Lote` no
+conoce ninguna de las tres.
+
+**Template Method** estrena el módulo de predicción, el último que quedaba vacío del plan inicial.
+`ModeloPrediccion.estimar()` es `final` y fija cuatro pasos —validar, calcular la base, ajustar por
+clima, descontar la merma—; de esos, uno es abstracto, uno es un gancho opcional y dos son privados
+para que ninguna subclase los pueda relajar. Los tres modelos imprimen la misma traza de cuatro
+renglones con números distintos.
+
+Y queda la frontera dicha en código: el **State** decide *si* se riega, la **Strategy** decide
+*cuánta* agua, y el **actuador** solo la aplica.
+
+📄 **[Documento completo de la Semana 15](semana-15-strategy-template-method/)** — explicación de
+ambos patrones, la comparación Strategy vs. Template Method, diagramas UML, 34 pruebas unitarias y
+las siete capturas.
+
 ---
 
 ## 🗺️ Hoja de ruta de patrones
@@ -513,8 +554,8 @@ del curso se sustentó cada uno.
 | 17 | **Observer** | Comportamiento | Alertas | 14 | ✅ Completado |
 | 18 | **State** | Comportamiento | Ciclo de vida del lote | 14 | ✅ Completado |
 | 19 | **Visitor** | Comportamiento | Operaciones sobre la finca | 14 | ✅ Completado |
-| 20 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
-| 21 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
+| 20 | **Strategy** | Comportamiento | Riego | 15 | ✅ Completado |
+| 21 | **Template Method** | Comportamiento | Predicción | 15 | ✅ Completado |
 | 22 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
 
 ## 🧩 Módulos del sistema

@@ -1,0 +1,64 @@
+---
+title: Semana 15 - Patron Template Method - prediccion de cosecha
+---
+classDiagram
+    direction TB
+
+    class ModeloPrediccion {
+        <<abstract>>
+        #MERMA_POSCOSECHA = 0.08
+        +estimar(lote, historico) Prediccion [FINAL]
+        -validarEntrada(lote, historico) void
+        #calcularBase(historico) double [ABSTRACTO]
+        #ajustarPorClima(base) double [GANCHO]
+        -aplicarMerma(toneladas) double
+        #promedio(valores, desde) double
+        +getNombre() String
+    }
+
+    class PrediccionPromedioMovil {
+        -ventana: int
+        #calcularBase(historico) double
+    }
+
+    class PrediccionTendenciaLineal {
+        minimos cuadrados
+        #calcularBase(historico) double
+    }
+
+    class PrediccionPorEstacion {
+        -clima: ProveedorClima
+        -factorEstacional: double
+        #calcularBase(historico) double
+        #ajustarPorClima(base) double
+    }
+
+    class Prediccion {
+        -toneladasBase: double
+        -toneladasAjustadas: double
+        -toneladasNetas: double
+        -traza: List~String~
+        +getTraza() List~String~
+    }
+
+    class ProveedorClima {
+        <<interface>>
+        Adapter de la Semana 7
+    }
+
+    ModeloPrediccion <|-- PrediccionPromedioMovil
+    ModeloPrediccion <|-- PrediccionTendenciaLineal
+    ModeloPrediccion <|-- PrediccionPorEstacion
+    ModeloPrediccion ..> Prediccion : produce
+    PrediccionPorEstacion o--> ProveedorClima
+
+    note for ModeloPrediccion "estimar() es FINAL: fija el orden
+    1 validar - 2 base - 3 clima - 4 merma.
+    Los pasos 1 y 4 son PRIVADOS, asi que
+    ninguna subclase los puede relajar."
+    note for PrediccionPorEstacion "La UNICA que sobreescribe el gancho.
+    Las otras dos lo heredan y no
+    escriben una linea."
+    note for Prediccion "Guarda la TRAZA de los pasos:
+    es la evidencia de que los tres
+    modelos recorren el mismo esqueleto."

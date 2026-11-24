@@ -1,0 +1,66 @@
+---
+title: Semana 15 - Patron Strategy - cuanta agua aplicar
+---
+classDiagram
+    direction TB
+
+    class Lote {
+        -estrategiaRiego: EstrategiaRiego
+        +setEstrategiaRiego(e) Lote
+        +getEstrategiaRiego() EstrategiaRiego
+        +monitorear() void
+    }
+
+    class EstrategiaRiego {
+        <<interface>>
+        +calcularMinutos(humedad, umbrales) int
+        +getNombre() String
+    }
+
+    class EstrategiaAhorroAgua {
+        -RECUPERACION_POR_MINUTO = 3.0
+        -MAXIMO_MINUTOS = 15
+        +calcularMinutos(...) int
+    }
+
+    class EstrategiaIntensiva {
+        -MARGEN = 10.0
+        -MINIMO_MINUTOS = 10
+        +calcularMinutos(...) int
+    }
+
+    class EstrategiaSegunClima {
+        -clima: ProveedorClima
+        -HUMEDAD_AMBIENTE_ALTA = 60.0
+        +calcularMinutos(...) int
+    }
+
+    class ProveedorClima {
+        <<interface>>
+        Adapter de la Semana 7
+        +obtenerTemperatura() Lectura
+        +obtenerHumedad() Lectura
+    }
+
+    class ActuadorRiego {
+        <<interface>>
+        +regar(minutos) void
+    }
+
+    EstrategiaRiego <|.. EstrategiaAhorroAgua
+    EstrategiaRiego <|.. EstrategiaIntensiva
+    EstrategiaRiego <|.. EstrategiaSegunClima
+    Lote o--> EstrategiaRiego : politica intercambiable
+    Lote o--> ActuadorRiego : solo aplica
+    EstrategiaSegunClima o--> ProveedorClima : colaboracion propia
+
+    note for Lote "CONTEXTO. No conoce ninguna
+    estrategia concreta y la puede
+    cambiar en ejecucion."
+    note for EstrategiaSegunClima "Recibe el clima por CONSTRUCTOR.
+    Si fuera por parametro del metodo,
+    las otras dos tendrian que recibirlo
+    sin usarlo."
+    note for ActuadorRiego "La estrategia decide los minutos;
+    el actuador los convierte en litros
+    segun su caudal."

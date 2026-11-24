@@ -1,0 +1,14 @@
+---
+title: Semana 15 - Tres patrones sobre la misma decision de riego
+---
+flowchart TB
+    A["Lote.monitorear()"] --> B{"estado.admiteRiego()?"}
+    B -- "false" --> C["No corresponde regar<br/>(en preparacion o en barbecho)"]
+    B -- "true" --> D["estrategia.calcularMinutos(humedad, umbrales)"]
+    D -- "0 min" --> E["La politica decide<br/>no regar ahora"]
+    D -- "N min" --> F["actuador.regar(N)"]
+    F --> G["N x litros_por_minuto<br/>aplicados"]
+
+    S["STATE - Semana 14<br/>decide SI"] -.-> B
+    T["STRATEGY - Semana 15<br/>decide CUANTO"] -.-> D
+    U["ABSTRACT FACTORY - Semana 6<br/>solo APLICA"] -.-> F
