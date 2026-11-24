@@ -1,0 +1,67 @@
+---
+title: Semana 14 - Patron State - ciclo de vida del lote
+---
+classDiagram
+    direction TB
+
+    class Lote {
+        -estado: EstadoLote
+        +sembrar() void
+        +madurar() void
+        +cosechar() void
+        +prepararSuelo() void
+        +admiteRiego() boolean
+        ~cambiarEstado(nuevo) void
+    }
+
+    class EstadoLote {
+        <<interface>>
+        +getNombre() String
+        +admiteRiego() boolean
+        +sembrar(lote) void
+        +madurar(lote) void
+        +cosechar(lote) void
+        +prepararSuelo(lote) void
+    }
+
+    class EstadoBase {
+        <<abstract>>
+        rechaza TODAS por defecto
+        -rechazar(operacion, lote) void
+    }
+
+    class EnPreparacion {
+        admiteRiego : false
+        +sembrar(lote) void
+    }
+    class Sembrado {
+        admiteRiego : true
+        +madurar(lote) void
+    }
+    class Maduro {
+        admiteRiego : true
+        +cosechar(lote) void
+    }
+    class EnBarbecho {
+        admiteRiego : false
+        +prepararSuelo(lote) void
+    }
+
+    EstadoLote <|.. EstadoBase
+    EstadoBase <|-- EnPreparacion
+    EstadoBase <|-- Sembrado
+    EstadoBase <|-- Maduro
+    EstadoBase <|-- EnBarbecho
+    Lote o--> EstadoLote : delega
+    EnPreparacion ..> Sembrado : sembrar
+    Sembrado ..> Maduro : madurar
+    Maduro ..> EnBarbecho : cosechar
+    EnBarbecho ..> EnPreparacion : prepararSuelo
+
+    note for EstadoBase "Lo PROHIBIDO es el valor por defecto.
+    Cada estado concreto sobreescribe
+    solo la transicion que si permite."
+    note for Lote "CONTEXTO. cambiarEstado() es de
+    paquete: solo los estados transitan.
+    Diferencia con Strategy: alli el
+    cliente elige; aqui el objeto cambia."

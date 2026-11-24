@@ -1,0 +1,60 @@
+---
+title: Semana 14 - Patron Visitor - operaciones sobre la finca
+---
+classDiagram
+    direction TB
+
+    class ComponenteFinca {
+        <<interface>>
+        +getNombre() String
+        +getAreaHectareas() double
+        +contarSensores() int
+        +monitorear() void
+        +describir(nivel) String
+        +aceptar(visitante) void
+    }
+
+    class ZonaCultivo {
+        +aceptar(visitante) void
+    }
+    class Lote {
+        +aceptar(visitante) void
+    }
+
+    class VisitanteFinca {
+        <<interface>>
+        +visitarZona(zona) void
+        +visitarLote(lote) void
+        +getResultado() String
+    }
+
+    class VisitanteInventario {
+        -zonas, lotes, sensores: int
+        -porEstado: Map
+    }
+    class VisitanteCostoRiego {
+        -litros: double
+        usa lote.admiteRiego()
+    }
+    class VisitanteExportarCsv {
+        -filas: StringBuilder
+    }
+
+    ComponenteFinca <|.. ZonaCultivo
+    ComponenteFinca <|.. Lote
+    ZonaCultivo o--> "0..*" ComponenteFinca : hijos
+    VisitanteFinca <|.. VisitanteInventario
+    VisitanteFinca <|.. VisitanteCostoRiego
+    VisitanteFinca <|.. VisitanteExportarCsv
+    ZonaCultivo ..> VisitanteFinca : visitarZona y propaga
+    Lote ..> VisitanteFinca : visitarLote
+
+    note for ComponenteFinca "Las 5 primeras operaciones obligaron
+    a tocar la interfaz, ZonaCultivo y Lote.
+    aceptar() es la ULTIMA intrusion:
+    de aqui en adelante, una operacion
+    nueva es solo un visitante nuevo."
+    note for VisitanteFinca "El precio: relaja el encapsulamiento
+    y es rigido ante TIPOS nuevos.
+    Se usa cuando la jerarquia es estable
+    y las operaciones no."

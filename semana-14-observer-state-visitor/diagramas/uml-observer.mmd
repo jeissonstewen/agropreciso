@@ -1,0 +1,54 @@
+---
+title: Semana 14 - Patron Observer - publicacion de alertas
+---
+classDiagram
+    direction TB
+
+    class MonitorDeAlertas {
+        -observadores: List~ObservadorAlerta~
+        -alertasPublicadas: int
+        +suscribir(observador) void
+        +quitar(observador) boolean
+        +revisarFinca(finca) int
+        +publicarCambioDeEstado(lote, anterior) void
+        -publicar(alerta) void
+    }
+
+    class ObservadorAlerta {
+        <<interface>>
+        +alPublicarse(alerta) void
+        +getNombre() String
+    }
+
+    class PanelDeAlertas {
+        +alPublicarse(alerta) void
+    }
+    class HistorialAlertas {
+        -alertas: List~Alerta~
+        +cuantas() int
+    }
+    class ContadorPorSeveridad {
+        -conteo: Map~Severidad, Integer~
+        +contar(severidad) int
+    }
+
+    class Alerta {
+        -lote: String
+        -severidad: Severidad
+        -mensaje: String
+    }
+
+    ObservadorAlerta <|.. PanelDeAlertas
+    ObservadorAlerta <|.. HistorialAlertas
+    ObservadorAlerta <|.. ContadorPorSeveridad
+    MonitorDeAlertas o--> "0..*" ObservadorAlerta : notifica
+    MonitorDeAlertas ..> Alerta : publica
+    ObservadorAlerta ..> Alerta : recibe
+
+    note for MonitorDeAlertas "SUJETO: su lista es de INTERFACES.
+    No sabe cuantos hay ni quienes son.
+    Funciona igual con cero suscriptores."
+    note for ObservadorAlerta "Son ELLOS los que se suscriben.
+    Diferencia con Mediator (S13):
+    alli el centro conoce a cada colega
+    concreto y decide a quien le toca."

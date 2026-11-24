@@ -10,7 +10,7 @@
 [![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Tipo](https://img.shields.io/badge/Aplicación-Consola-blue)](#-cómo-ejecutar)
 [![Datos](https://img.shields.io/badge/Datos-Simulados%20(sin%20BD)-lightgrey)](#-alcance-y-restricciones)
-[![Patrones](https://img.shields.io/badge/Patrones-15%20implementados%20%2B%201%20analizado-yellow)](#-hoja-de-ruta-de-patrones)
+[![Patrones](https://img.shields.io/badge/Patrones-18%20implementados%20%2B%201%20analizado-brightgreen)](#-hoja-de-ruta-de-patrones)
 
 </div>
 
@@ -49,6 +49,7 @@ de la asignatura **Patrones de Software**.
   - [Semana 10 — Proxy y Flyweight](#semana-10--patrones-proxy-y-flyweight)
   - [Semana 12 — Chain of Responsibility y Command](#semana-12--patrones-chain-of-responsibility-y-command)
   - [Semana 13 — Iterator y Mediator](#semana-13--patrones-iterator-y-mediator)
+  - [Semana 14 — Observer, State y Visitor](#semana-14--patrones-observer-state-y-visitor)
 - [Hoja de ruta de patrones](#-hoja-de-ruta-de-patrones)
 - [Módulos del sistema](#-módulos-del-sistema)
 
@@ -137,6 +138,12 @@ agroprecision/
 │   ├── test/
 │   ├── diagramas/
 │   └── evidencias/
+├── semana-14-observer-state-visitor/  Patrones Observer, State y Visitor
+│   ├── README.md
+│   ├── src/
+│   ├── test/
+│   ├── diagramas/
+│   └── evidencias/
 └── lib/                            junit-platform-console-standalone (JUnit 5)
 ```
 
@@ -155,6 +162,7 @@ agroprecision/
 | [`semana-10-proxy-flyweight/`](semana-10-proxy-flyweight/) | Semana 10 — Proxy de protección por roles y análisis de no implementación del Flyweight |
 | [`semana-12-chain-command/`](semana-12-chain-command/) | Semana 12 — Chain of Responsibility (atención de incidencias) y Command (órdenes con bitácora y deshacer) |
 | [`semana-13-iterator-mediator/`](semana-13-iterator-mediator/) | Semana 13 — Iterator (recorridos del árbol) y Mediator (centro de operaciones) |
+| [`semana-14-observer-state-visitor/`](semana-14-observer-state-visitor/) | Semana 14 — Observer (alertas), State (ciclo del lote) y Visitor (operaciones sobre la finca) |
 | [`lib/`](lib/) | JUnit 5 (jar autónomo) para las pruebas unitarias |
 
 ## ▶️ Cómo ejecutar
@@ -201,6 +209,10 @@ cd semana-12-chain-command/src && javac *.java && java MainDemoChainCommand
 cd semana-13-iterator-mediator/src && javac *.java && java MainDemoIteratorMediator
 ```
 
+```bash
+cd semana-14-observer-state-visitor/src && javac *.java && java MainDemoObserverStateVisitor
+```
+
 Las pruebas unitarias se ejecutan con JUnit 5, sin Maven ni Gradle:
 
 ```bash
@@ -225,6 +237,10 @@ cd semana-12-chain-command && ./pruebas.sh
 
 ```bash
 cd semana-13-iterator-mediator && ./pruebas.sh
+```
+
+```bash
+cd semana-14-observer-state-visitor && ./pruebas.sh
 ```
 
 La Semana 10 incluye además un banco de medición de memoria que sustenta la decisión de no
@@ -260,6 +276,7 @@ incluye además su código y las evidencias de las pruebas ejecutadas.
 | 10 | Proxy · Flyweight* | Control de acceso por roles | [Ver](semana-10-proxy-flyweight/) | [Ver](semana-10-proxy-flyweight/src/) | [6 capturas](semana-10-proxy-flyweight/evidencias/) | _(pendiente)_ |
 | 12 | Chain of Responsibility · Command | Incidencias y órdenes | [Ver](semana-12-chain-command/) | [Ver](semana-12-chain-command/src/) | [6 capturas](semana-12-chain-command/evidencias/) | _(pendiente)_ |
 | 13 | Iterator · Mediator | Recorridos y coordinación | [Ver](semana-13-iterator-mediator/) | [Ver](semana-13-iterator-mediator/src/) | [6 capturas](semana-13-iterator-mediator/evidencias/) | _(pendiente)_ |
+| 14 | Observer · State · Visitor | Alertas, ciclo del lote y reportes | [Ver](semana-14-observer-state-visitor/) | [Ver](semana-14-observer-state-visitor/src/) | [7 capturas](semana-14-observer-state-visitor/evidencias/) | _(pendiente)_ |
 
 > \* En la Semana 10 el patrón **Flyweight no se implementa**: se analiza y se documenta, con una
 > medición de memoria, por qué no corresponde hacerlo a la escala actual del prototipo y bajo qué
@@ -445,6 +462,29 @@ finca** y **avisa sin saber quién atenderá**.
 📄 **[Documento completo de la Semana 13](semana-13-iterator-mediator/)** — explicación de ambos
 patrones, diagramas UML, 21 pruebas unitarias y las seis capturas.
 
+### Semana 14 — Patrones Observer, State y Visitor
+
+Tres patrones de comportamiento que se encadenan: **State cambia, Observer avisa, Visitor reporta.**
+
+**State** da al lote un ciclo de vida —preparación, sembrado, maduro, barbecho— donde cada estado
+es una clase que sabe qué permite y a cuál transita. `EstadoBase` rechaza todo por defecto, así que
+lo prohibido no hay que recordar escribirlo. Y el estado manda sobre la lectura: un lote en
+barbecho no se riega aunque el sensor lo dé por seco.
+
+**Observer** publica las alertas a quien se haya suscrito. El sujeto guarda una lista de interfaces
+y no sabe cuántos hay ni quiénes son; desuscribirse deja de notificar y sin nadie suscrito el
+monitor detecta igual.
+
+**Visitor** resuelve un problema documentado en el propio historial del proyecto: `ComponenteFinca`
+pasó de tres a cinco operaciones, y **cada una obligó a tocar tres archivos**. Con el visitante, una
+operación nueva es una clase nueva y cero cambios en el árbol.
+
+La integración se mide: antes de cosechar el maizal el costo de riego estima 190 litros; después de
+`cosechar()` el mismo visitante sobre el mismo árbol estima 40.
+
+📄 **[Documento completo de la Semana 14](semana-14-observer-state-visitor/)** — explicación de los
+tres patrones, diagramas UML, 26 pruebas unitarias y las siete capturas.
+
 ---
 
 ## 🗺️ Hoja de ruta de patrones
@@ -470,11 +510,12 @@ del curso se sustentó cada uno.
 | 14 | **Command** | Comportamiento | Órdenes de operación | 12 | ✅ Completado |
 | 15 | **Iterator** | Comportamiento | Recorridos del árbol de la finca | 13 | ✅ Completado |
 | 16 | **Mediator** | Comportamiento | Centro de operaciones | 13 | ✅ Completado |
-| 17 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
-| 18 | Observer | Comportamiento | Alertas | — | ⏳ Pendiente |
-| 19 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
-| 20 | State | Comportamiento | Estados del lote | — | ⏳ Pendiente |
-| 21 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
+| 17 | **Observer** | Comportamiento | Alertas | 14 | ✅ Completado |
+| 18 | **State** | Comportamiento | Ciclo de vida del lote | 14 | ✅ Completado |
+| 19 | **Visitor** | Comportamiento | Operaciones sobre la finca | 14 | ✅ Completado |
+| 20 | Strategy | Comportamiento | Riego | — | ⏳ Pendiente |
+| 21 | Template Method | Comportamiento | Predicción | — | ⏳ Pendiente |
+| 22 | DAO / Repository | Arquitectural | Persistencia simulada | — | ⏳ Pendiente |
 
 ## 🧩 Módulos del sistema
 
